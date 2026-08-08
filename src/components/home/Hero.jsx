@@ -57,12 +57,12 @@ export default function Hero() {
             >
               Explore Articles
             </Link>
-            <a
-              href="#"
+            <Link
+              href="/career-prediction"
               className="inline-flex items-center justify-center rounded-full border border-zinc-300 bg-white px-6 py-3 text-sm font-medium text-zinc-800 transition-all duration-300 hover:-translate-y-0.5 hover:border-zinc-900 hover:text-zinc-950"
             >
               Try Career Prediction
-            </a>
+            </Link>
           </div>
         </div>
 

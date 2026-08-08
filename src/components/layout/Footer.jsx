@@ -11,7 +11,7 @@ import Link from 'next/link';
 const exploreLinks = [
   { label: 'Home', href: '/' },
   { label: 'Articles', href: '/articles' },
-  { label: 'Discover Your Legal Path', href: '#' },
+  { label: 'Discover Your Legal Path', href: '/career-prediction' },
   { label: 'About', href: '#' },
   { label: 'Contact', href: '#' },
 ];
