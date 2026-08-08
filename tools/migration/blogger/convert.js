@@ -126,9 +126,17 @@ function main() {
       };
     });
 
+  const serializedPosts = JSON.stringify(posts, null, 2);
+  const usedMedia = new Set(
+    [...serializedPosts.matchAll(/["']\/blogger\/([^"']+)/g)].map((match) => match[1])
+  );
+  for (const fileName of fs.readdirSync(publicDir)) {
+    if (!usedMedia.has(fileName)) fs.rmSync(path.join(publicDir, fileName));
+  }
+
   fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-  fs.writeFileSync(outputPath, `// Generated from the My Legal Paddy Blogger Takeout export.\n// Run tools/migration/blogger/convert.js to regenerate.\n\nexport const articles = ${JSON.stringify(posts, null, 2)};\n`);
-  console.log(`Imported ${posts.length} Blogger articles and ${mediaMap.size / 2} media mappings.`);
+  fs.writeFileSync(outputPath, `// Generated from the My Legal Paddy Blogger Takeout export.\n// Run tools/migration/blogger/convert.js to regenerate.\n\nexport const articles = ${serializedPosts};\n`);
+  console.log(`Imported ${posts.length} Blogger articles and retained ${usedMedia.size} referenced local media files.`);
 }
 
 main();
