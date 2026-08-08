@@ -4,7 +4,9 @@ import { ArrowRight, ChevronLeft, ChevronRight, Search } from 'lucide-react';
 import ArticleCard from '@/components/articles/ArticleCard';
 import Footer from '@/components/layout/Footer';
 import Navbar from '@/components/layout/Navbar';
-import { articles } from '@/data/articles';
+import { getPublicArticles } from '@/lib/content/publicArticles';
+
+export const dynamic = 'force-dynamic';
 
 const categories = [
   'All',
@@ -28,7 +30,8 @@ export const metadata = {
     'Premium legal insights for law students and young professionals across Africa.',
 };
 
-export default function ArticlesPage() {
+export default async function ArticlesPage() {
+  const articles = await getPublicArticles();
   const featuredArticle = articles.find((article) => article.featured) ?? articles[0];
   const latestArticles = articles.filter((article) => article.id !== featuredArticle.id);
 

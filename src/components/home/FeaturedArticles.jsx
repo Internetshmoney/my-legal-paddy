@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { articles as allArticles } from '@/data/articles';
+import { getPublicArticles } from '@/lib/content/publicArticles';
 
 function ArticleCard({ article }) {
   return (
@@ -49,7 +49,8 @@ function FeaturedArticleCard({ article }) {
   );
 }
 
-export default function FeaturedArticles() {
+export default async function FeaturedArticles() {
+  const allArticles = await getPublicArticles();
   const featuredArticle = allArticles.find((article) => article.featured) || allArticles[0];
   const articles = allArticles.filter((article) => article.slug !== featuredArticle.slug).slice(0, 4);
 

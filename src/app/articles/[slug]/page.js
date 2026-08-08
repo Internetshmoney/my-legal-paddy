@@ -2,15 +2,13 @@ import { notFound } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ArticleDetail from "@/components/articles/ArticleDetail";
-import { articles } from "@/data/articles";
+import { getPublicArticleBySlug, getPublicArticles } from "@/lib/content/publicArticles";
 
-export function generateStaticParams() {
-  return articles.map((article) => ({ slug: article.slug }));
-}
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  const article = articles.find((item) => item.slug === slug);
+  const article = await getPublicArticleBySlug(slug);
 
   if (!article) {
     return {
@@ -27,12 +25,13 @@ export async function generateMetadata({ params }) {
 
 export default async function ArticlePage({ params }) {
   const { slug } = await params;
-  const article = articles.find((item) => item.slug === slug);
+  const article = await getPublicArticleBySlug(slug);
 
   if (!article) {
     notFound();
   }
 
+  const articles = await getPublicArticles();
   const relatedArticles = articles
     .filter((item) => item.slug !== article.slug)
     .slice(0, 3);
