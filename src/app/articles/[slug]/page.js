@@ -9,7 +9,8 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }) {
-  const article = articles.find((item) => item.slug === params.slug);
+  const { slug } = await params;
+  const article = articles.find((item) => item.slug === slug);
 
   if (!article) {
     return {
@@ -25,7 +26,8 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function ArticlePage({ params }) {
-  const article = articles.find((item) => item.slug === params.slug);
+  const { slug } = await params;
+  const article = articles.find((item) => item.slug === slug);
 
   if (!article) {
     notFound();

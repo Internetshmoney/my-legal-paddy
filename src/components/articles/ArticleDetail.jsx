@@ -2,8 +2,6 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight, CalendarDays, Clock3, UserRound } from "lucide-react";
 
 export default function ArticleDetail({ article, relatedArticles }) {
-  const paragraphs = article.content ?? [article.excerpt];
-
   return (
     <article className="pb-20">
       <div className="mx-auto max-w-6xl px-6 py-16 sm:px-8 lg:px-10 lg:py-24">
@@ -53,11 +51,10 @@ export default function ArticleDetail({ article, relatedArticles }) {
         </div>
 
         <div className="mx-auto mt-12 max-w-3xl">
-          <div className="space-y-6 text-lg leading-9 text-foreground/90">
-            {paragraphs.map((paragraph, index) => (
-              <p key={`${article.slug}-${index}`}>{paragraph}</p>
-            ))}
-          </div>
+          <div
+            className="blogger-article text-lg leading-9 text-foreground/90"
+            dangerouslySetInnerHTML={{ __html: article.content || `<p>${article.excerpt}</p>` }}
+          />
         </div>
       </div>
 

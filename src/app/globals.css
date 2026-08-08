@@ -128,3 +128,17 @@
     @apply font-sans;
   }
 }
+
+@layer components {
+  .blogger-article > * + * { margin-top: 1.5rem; }
+  .blogger-article h1, .blogger-article h2, .blogger-article h3 { margin-top: 2.5rem; font-weight: 650; line-height: 1.25; }
+  .blogger-article h1 { font-size: 2rem; }
+  .blogger-article h2 { font-size: 1.65rem; }
+  .blogger-article h3 { font-size: 1.35rem; }
+  .blogger-article img { width: 100%; height: auto; border-radius: 1.25rem; margin: 2rem auto; }
+  .blogger-article a { color: #8f7d4d; text-decoration: underline; text-underline-offset: 0.2em; }
+  .blogger-article ul, .blogger-article ol { padding-left: 1.5rem; }
+  .blogger-article ul { list-style: disc; }
+  .blogger-article ol { list-style: decimal; }
+  .blogger-article blockquote { border-left: 3px solid #c9b974; padding-left: 1.25rem; color: var(--muted-foreground); }
+}
