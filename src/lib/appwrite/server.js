@@ -2,7 +2,7 @@ import 'server-only';
 
 import { cookies } from 'next/headers';
 import { Account, Client, Databases, Storage } from 'node-appwrite';
-import { appwriteConfig, appwriteConfigured, sessionCookieName } from './config';
+import { appwriteConfig, appwriteConfigured, getDashboardRole, sessionCookieName } from './config';
 
 export function createAdminClient() {
   if (!appwriteConfigured) throw new Error('Appwrite environment variables are not configured.');
@@ -33,7 +33,15 @@ export async function getCurrentAdmin() {
     const client = await createSessionClient();
     if (!client) return null;
     const user = await new Account(client).get();
-    return appwriteConfig.adminUserIds.includes(user.$id) ? user : null;
+    const role = getDashboardRole(user.$id);
+    if (!role) return null;
+    return {
+      id: user.$id,
+      email: user.email,
+      name: user.name,
+      role,
+      canManageTutors: role === 'manager',
+    };
   } catch {
     return null;
   }

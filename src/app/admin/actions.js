@@ -5,16 +5,22 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { Account, ID } from 'node-appwrite';
 import { InputFile } from 'node-appwrite/file';
-import { appwriteConfig, appwriteConfigured, sessionCookieName } from '@/lib/appwrite/config';
+import { appwriteConfig, appwriteConfigured, getDashboardRole, sessionCookieName } from '@/lib/appwrite/config';
 import { createAdminClient, createSessionClient, getAdminServices, getCurrentAdmin } from '@/lib/appwrite/server';
 
 function slugify(value) {
   return value.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 90);
 }
 
-async function requireAdmin() {
+async function requireArticleAccess() {
   const admin = await getCurrentAdmin();
   if (!admin) throw new Error('You are not authorized to perform this action.');
+  return admin;
+}
+
+async function requireTutorManager() {
+  const admin = await requireArticleAccess();
+  if (!admin.canManageTutors) throw new Error('Only the dashboard manager can manage tutors.');
   return admin;
 }
 
@@ -23,7 +29,7 @@ export async function loginAdmin(previousState, formData) {
   try {
     const account = new Account(createAdminClient());
     const session = await account.createEmailPasswordSession({ email: String(formData.get('email') || ''), password: String(formData.get('password') || '') });
-    if (!appwriteConfig.adminUserIds.includes(session.userId)) {
+    if (!getDashboardRole(session.userId)) {
       await new Account(createAdminClient().setSession(session.secret)).deleteSession({ sessionId: 'current' }).catch(() => {});
       return { error: 'This Appwrite account is not approved as an administrator.' };
     }
@@ -47,7 +53,7 @@ export async function logoutAdmin() {
 
 export async function createArticle(previousState, formData) {
   try {
-    await requireAdmin();
+    await requireArticleAccess();
     const { databases, storage } = getAdminServices();
     const title = String(formData.get('title') || '').trim();
     const content = String(formData.get('content') || '').trim();
@@ -84,7 +90,7 @@ export async function createArticle(previousState, formData) {
 }
 
 export async function setArticleStatus(formData) {
-  await requireAdmin();
+  await requireArticleAccess();
   const id = String(formData.get('id'));
   const status = String(formData.get('status'));
   const { databases } = getAdminServices();
@@ -93,7 +99,7 @@ export async function setArticleStatus(formData) {
 }
 
 export async function deleteArticle(formData) {
-  await requireAdmin();
+  await requireArticleAccess();
   const { databases } = getAdminServices();
   await databases.deleteDocument({ databaseId: appwriteConfig.databaseId, collectionId: appwriteConfig.articlesCollectionId, documentId: String(formData.get('id')) });
   revalidatePath('/'); revalidatePath('/articles'); revalidatePath('/admin');
@@ -113,14 +119,14 @@ export async function submitTutorApplication(previousState, formData) {
 }
 
 export async function setTutorStatus(formData) {
-  await requireAdmin();
+  await requireTutorManager();
   const { databases } = getAdminServices();
   await databases.updateDocument({ databaseId: appwriteConfig.databaseId, collectionId: appwriteConfig.tutorsCollectionId, documentId: String(formData.get('id')), data: { status: String(formData.get('status')) } });
   revalidatePath('/admin'); revalidatePath('/tutors');
 }
 
 export async function deleteTutor(formData) {
-  await requireAdmin();
+  await requireTutorManager();
   const { databases } = getAdminServices();
   await databases.deleteDocument({ databaseId: appwriteConfig.databaseId, collectionId: appwriteConfig.tutorsCollectionId, documentId: String(formData.get('id')) });
   revalidatePath('/admin'); revalidatePath('/tutors');

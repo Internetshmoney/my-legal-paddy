@@ -6,8 +6,8 @@ The admin dashboard manages two resources only: **articles** and **tutors**. Wri
 
 1. Create a project in Appwrite Cloud.
 2. Add the production hostname and `localhost` as Web platforms.
-3. In **Auth → Users**, create the account that will sign in to the dashboard.
-4. Copy that user's ID.
+3. In **Auth → Users**, create the manager and article-editor accounts that will sign in to the dashboard.
+4. Copy each user's ID.
 5. Create an API key with Databases and Storage read/write scopes. Keep this key server-side and never prefix it with `NEXT_PUBLIC_`.
 
 ## 2. Configure the local project
@@ -18,14 +18,15 @@ Copy `.env.example` to `.env.local` and fill in:
 APPWRITE_ENDPOINT=https://cloud.appwrite.io/v1
 APPWRITE_PROJECT_ID=your-project-id
 APPWRITE_API_KEY=your-server-api-key
-APPWRITE_ADMIN_USER_IDS=your-admin-user-id
+APPWRITE_MANAGER_USER_IDS=your-manager-user-id
+APPWRITE_ARTICLE_EDITOR_USER_IDS=editor-user-id-1,editor-user-id-2
 APPWRITE_DATABASE_ID=legal-paddy
 APPWRITE_ARTICLES_COLLECTION_ID=articles
 APPWRITE_TUTORS_COLLECTION_ID=tutors
 APPWRITE_ARTICLE_IMAGES_BUCKET_ID=article-images
 ```
 
-Multiple admin user IDs can be separated with commas.
+The manager can manage articles and tutors. Article editors can manage articles only. Multiple editor IDs are separated with commas. The manager does not need to be repeated in the editor list.
 
 ## 3. Create the schema
 
@@ -39,6 +40,6 @@ The script creates the database, article and tutor collections, their attributes
 
 ## 4. Add the same variables to Vercel
 
-Add all eight variables in the Vercel project's Environment Variables settings for Production, Preview, and Development, then redeploy. Do not expose the API key to the browser.
+Add all nine variables in the Vercel project's Environment Variables settings for Production, Preview, and Development, then redeploy. Do not expose the API key to the browser.
 
 The dashboard is at `/admin`. Tutor applications submitted at `/tutors` appear there for approval. Only approved tutors are displayed publicly, and only published Appwrite articles appear on the website.
