@@ -1,0 +1,47 @@
+import { notFound } from "next/navigation";
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
+import ArticleDetail from "@/components/articles/ArticleDetail";
+import { articles } from "@/data/articles";
+
+export function generateStaticParams() {
+  return articles.map((article) => ({ slug: article.slug }));
+}
+
+export async function generateMetadata({ params }) {
+  const article = articles.find((item) => item.slug === params.slug);
+
+  if (!article) {
+    return {
+      title: "Article Not Found | My Legal Paddy",
+      description: "The requested article could not be found.",
+    };
+  }
+
+  return {
+    title: `${article.title} | My Legal Paddy`,
+    description: article.excerpt,
+  };
+}
+
+export default async function ArticlePage({ params }) {
+  const article = articles.find((item) => item.slug === params.slug);
+
+  if (!article) {
+    notFound();
+  }
+
+  const relatedArticles = articles
+    .filter((item) => item.slug !== article.slug)
+    .slice(0, 3);
+
+  return (
+    <>
+      <Navbar />
+      <main className="flex-1 bg-[radial-gradient(circle_at_top_left,_rgba(245,158,11,0.12),_transparent_24%),linear-gradient(135deg,_rgba(255,255,255,0.97),_rgba(248,244,232,0.9))] text-foreground dark:bg-[radial-gradient(circle_at_top_left,_rgba(245,158,11,0.16),_transparent_24%),linear-gradient(135deg,_rgba(9,9,11,0.98),_rgba(24,24,27,0.95))]">
+        <ArticleDetail article={article} relatedArticles={relatedArticles} />
+      </main>
+      <Footer />
+    </>
+  );
+}
