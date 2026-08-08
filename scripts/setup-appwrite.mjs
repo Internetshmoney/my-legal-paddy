@@ -20,13 +20,13 @@ await database();
 await collection(articlesId, 'Articles');
 await string(articlesId, 'title', 255); await string(articlesId, 'slug', 255); await string(articlesId, 'excerpt', 2000);
 await string(articlesId, 'category', 100); await string(articlesId, 'author', 150); await string(articlesId, 'content', 100000);
-await string(articlesId, 'imageUrl', 2000, false, ''); await string(articlesId, 'imageFileId', 36, false, ''); await string(articlesId, 'status', 20, true, 'draft');
-await ignoreConflict(() => databases.createBooleanAttribute({ databaseId, collectionId: articlesId, key: 'featured', required: true, xdefault: false }));
+await string(articlesId, 'imageUrl', 2000, false, ''); await string(articlesId, 'imageFileId', 36, false, ''); await string(articlesId, 'status', 20);
+await ignoreConflict(() => databases.createBooleanAttribute({ databaseId, collectionId: articlesId, key: 'featured', required: true }));
 await ignoreConflict(() => databases.createDatetimeAttribute({ databaseId, collectionId: articlesId, key: 'publishedAt', required: false }));
 
 await collection(tutorsId, 'Tutors');
 await string(tutorsId, 'name', 150); await ignoreConflict(() => databases.createEmailAttribute({ databaseId, collectionId: tutorsId, key: 'email', required: true }));
-await string(tutorsId, 'university', 200); await string(tutorsId, 'level', 100); await string(tutorsId, 'subjects', 1000); await string(tutorsId, 'availability', 500); await string(tutorsId, 'bio', 3000); await string(tutorsId, 'status', 20, true, 'pending'); await string(tutorsId, 'photoUrl', 2000, false, '');
+await string(tutorsId, 'university', 200); await string(tutorsId, 'level', 100); await string(tutorsId, 'subjects', 1000); await string(tutorsId, 'availability', 500); await string(tutorsId, 'bio', 3000); await string(tutorsId, 'status', 20); await string(tutorsId, 'photoUrl', 2000, false, '');
 await ignoreConflict(() => databases.createFloatAttribute({ databaseId, collectionId: tutorsId, key: 'hourlyRate', required: true, min: 0 }));
 await ignoreConflict(() => storage.createBucket({ bucketId, name: 'Article Images', permissions: [Permission.read(Role.any())], fileSecurity: false, enabled: true, maximumFileSize: 10485760, allowedFileExtensions: ['jpg', 'jpeg', 'png', 'webp'] }));
 
