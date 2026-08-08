@@ -3,6 +3,7 @@ import Footer from '../components/layout/Footer';
 import Hero from '../components/home/Hero';
 import FeaturedArticles from '../components/home/FeaturedArticles';
 import Opportunities from '../components/home/Opportunities';
+import Tutors from '../components/home/Tutors';
 import Community from '../components/home/Community';
 import Newsletter from '../components/home/Newsletter';
 
@@ -13,6 +14,7 @@ export default function Home() {
       <Hero />
       <FeaturedArticles />
       <Opportunities />
+      <Tutors />
       <Community />
       <Newsletter />
       <Footer />

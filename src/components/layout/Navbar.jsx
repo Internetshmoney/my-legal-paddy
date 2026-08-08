@@ -8,7 +8,7 @@ import { Menu, Moon, Search, X, Sun } from 'lucide-react';
 const links = [
   { label: 'Home', href: '/' },
   { label: 'Articles', href: '/articles' },
-  { label: 'Discover', href: '#' },
+  { label: 'Tutors', href: '/tutors' },
   { label: 'About', href: '#' },
   { label: 'Contact', href: '#' },
 ];
