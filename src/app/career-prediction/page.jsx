@@ -3,8 +3,15 @@ import Footer from '@/components/layout/Footer';
 import CareerPredictor from '@/components/career/CareerPredictor';
 
 export const metadata = {
-  title: 'Legal Career Predictor | My Legal Paddy',
+  title: 'Legal Career Path Predictor for Law Students',
   description: 'Take a student-friendly assessment to discover legal career paths that fit your interests, strengths and preferred working style.',
+  alternates: { canonical: '/career-prediction' },
+  openGraph: {
+    type: 'website',
+    url: '/career-prediction',
+    title: 'Legal Career Path Predictor for Law Students',
+    description: 'Answer eight practical questions and discover legal career paths suited to your strengths, interests and working style.',
+  },
 };
 
 export default function CareerPredictionPage() {

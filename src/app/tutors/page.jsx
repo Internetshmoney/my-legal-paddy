@@ -7,8 +7,15 @@ import { listTutors } from '@/lib/appwrite/data';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: 'Law Tutors | My Legal Paddy',
-  description: 'Find a law tutor or apply to teach university law students and earn per hour.',
+  title: 'Law Tutors for University Students',
+  description: 'Find approved law tutors for university courses in Nigeria, or apply to tutor law students and earn an hourly rate.',
+  alternates: { canonical: '/tutors' },
+  openGraph: {
+    type: 'website',
+    url: '/tutors',
+    title: 'Law Tutors for University Students',
+    description: 'Get focused help with university law courses from approved tutors, or apply to teach and earn per hour.',
+  },
 };
 
 const subjects = ['Contract Law', 'Constitutional Law', 'Criminal Law', 'Law of Torts', 'Commercial Law', 'Jurisprudence'];

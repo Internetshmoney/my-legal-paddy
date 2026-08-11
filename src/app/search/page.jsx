@@ -5,7 +5,11 @@ import Navbar from '@/components/layout/Navbar';
 import { getPublicArticles } from '@/lib/content/publicArticles';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Search Articles | My Legal Paddy' };
+export const metadata = {
+  title: 'Search Legal Articles',
+  description: 'Search My Legal Paddy articles by legal topic, category, title or writer.',
+  robots: { index: false, follow: true },
+};
 
 export default async function SearchPage({ searchParams }) {
   const { q = '' } = await searchParams;

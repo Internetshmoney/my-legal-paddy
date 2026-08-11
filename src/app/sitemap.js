@@ -22,7 +22,6 @@ export default async function sitemap() {
   return [
     ...pages.map((page) => ({
       url: `${siteUrl}${page.path}`,
-      lastModified: new Date(),
       changeFrequency: page.changeFrequency,
       priority: page.priority,
     })),

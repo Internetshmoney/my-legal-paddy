@@ -23,9 +23,16 @@ const categories = [
 ];
 
 export const metadata = {
-  title: 'Articles | My Legal Paddy',
+  title: 'Nigerian Law Articles for Students',
   description:
-    'Premium legal insights for law students and young professionals across Africa.',
+    'Read practical Nigerian law articles on constitutional law, criminal law, human rights, technology, legal writing and study skills.',
+  alternates: { canonical: '/articles' },
+  openGraph: {
+    type: 'website',
+    url: '/articles',
+    title: 'Nigerian Law Articles for Students',
+    description: 'Explore practical legal analysis, study guidance and current issues written for law students and young professionals.',
+  },
 };
 
 export default async function ArticlesPage({ searchParams }) {
