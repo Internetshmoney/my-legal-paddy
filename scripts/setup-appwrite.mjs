@@ -6,6 +6,7 @@ for (const key of required) if (!process.env[key]) throw new Error(`Missing ${ke
 const databaseId = process.env.APPWRITE_DATABASE_ID || 'legal-paddy';
 const articlesId = process.env.APPWRITE_ARTICLES_COLLECTION_ID || 'articles';
 const tutorsId = process.env.APPWRITE_TUTORS_COLLECTION_ID || 'tutors';
+const subscribersId = process.env.APPWRITE_SUBSCRIBERS_COLLECTION_ID || 'newsletter-subscribers';
 const bucketId = process.env.APPWRITE_ARTICLE_IMAGES_BUCKET_ID || 'article-images';
 const client = new Client().setEndpoint(process.env.APPWRITE_ENDPOINT).setProject(process.env.APPWRITE_PROJECT_ID).setKey(process.env.APPWRITE_API_KEY);
 const databases = new Databases(client);
@@ -28,6 +29,9 @@ await collection(tutorsId, 'Tutors');
 await string(tutorsId, 'name', 150); await ignoreConflict(() => databases.createEmailAttribute({ databaseId, collectionId: tutorsId, key: 'email', required: true }));
 await string(tutorsId, 'university', 200); await string(tutorsId, 'level', 100); await string(tutorsId, 'subjects', 1000); await string(tutorsId, 'availability', 500); await string(tutorsId, 'bio', 3000); await string(tutorsId, 'status', 20); await string(tutorsId, 'photoUrl', 2000, false, '');
 await ignoreConflict(() => databases.createFloatAttribute({ databaseId, collectionId: tutorsId, key: 'hourlyRate', required: true, min: 0 }));
+
+await collection(subscribersId, 'Newsletter Subscribers');
+await ignoreConflict(() => databases.createEmailAttribute({ databaseId, collectionId: subscribersId, key: 'email', required: true }));
 await ignoreConflict(() => storage.createBucket({ bucketId, name: 'Article Images', permissions: [Permission.read(Role.any())], fileSecurity: false, enabled: true, maximumFileSize: 10485760, allowedFileExtensions: ['jpg', 'jpeg', 'png', 'webp'] }));
 
-console.log('Appwrite database, collections, attributes, and image bucket are ready.');
+console.log('Appwrite articles, tutors, newsletter subscribers, attributes, and image bucket are ready.');

@@ -14,6 +14,7 @@ export const appwriteConfig = {
   databaseId: process.env.APPWRITE_DATABASE_ID || 'legal-paddy',
   articlesCollectionId: process.env.APPWRITE_ARTICLES_COLLECTION_ID || 'articles',
   tutorsCollectionId: process.env.APPWRITE_TUTORS_COLLECTION_ID || 'tutors',
+  subscribersCollectionId: process.env.APPWRITE_SUBSCRIBERS_COLLECTION_ID || 'newsletter-subscribers',
   articleImagesBucketId: process.env.APPWRITE_ARTICLE_IMAGES_BUCKET_ID || 'article-images',
   managerUserIds,
   articleEditorUserIds,

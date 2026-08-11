@@ -2,7 +2,8 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useSyncExternalStore } from 'react';
+import { usePathname } from 'next/navigation';
 import { Menu, Moon, Search, X, Sun } from 'lucide-react';
 
 const links = [
@@ -14,8 +15,26 @@ const links = [
   { label: 'Contact', href: '#' },
 ];
 
+function subscribeToTheme(callback) {
+  const observer = new MutationObserver(callback);
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+  return () => observer.disconnect();
+}
+
+function getThemeSnapshot() {
+  return document.documentElement.classList.contains('dark');
+}
+
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const isDark = useSyncExternalStore(subscribeToTheme, getThemeSnapshot, () => false);
+  const pathname = usePathname();
+
+  function toggleTheme() {
+    const next = !document.documentElement.classList.contains('dark');
+    document.documentElement.classList.toggle('dark', next);
+    localStorage.setItem('mlp-theme', next ? 'dark' : 'light');
+  }
 
   return (
     <header className="sticky top-0 z-50 backdrop-blur-xl border-b border-black/10 dark:border-white/10 bg-white/70 dark:bg-black/60">
@@ -49,7 +68,7 @@ export default function Navbar() {
 
         <nav className="hidden md:flex items-center gap-8">
                     {links.map((link) => {
-            const isActive = link.label === 'Home';
+            const isActive = link.href === '/' ? pathname === '/' : pathname.startsWith(link.href);
             return (
               <Link
                 key={link.label}
@@ -68,29 +87,31 @@ export default function Navbar() {
         </nav>
 
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-          <button
-            type="button"
-            aria-label="Search"
+          <Link
+            href="/search"
+            aria-label="Search articles"
             className="hidden h-10 w-10 min-w-[40px] items-center justify-center rounded-full text-zinc-700 dark:text-zinc-200 transition-all duration-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 sm:inline-flex"
           >
             <Search size={18} />
-          </button>
+          </Link>
 
           <button
             type="button"
-            aria-label="Theme placeholder"
+            aria-label={isDark ? 'Use light mode' : 'Use dark mode'}
+            aria-pressed={isDark}
+            onClick={toggleTheme}
             className="hidden h-10 w-10 min-w-[40px] items-center justify-center rounded-full border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-200 transition-all duration-200 sm:inline-flex"
           >
-            <Moon size={18} />
+            {isDark ? <Sun size={18} /> : <Moon size={18} />}
           </button>
 
-          <a
-            href="#"
+          <Link
+            href="/#newsletter"
             className="hidden min-w-[120px] items-center justify-center rounded-full bg-[#C9B974] px-5 py-2 text-sm font-semibold text-black transition-colors duration-200 hover:bg-[#bfa76a] md:inline-flex"
             aria-label="Subscribe"
           >
             Subscribe
-          </a>
+          </Link>
 
           <button
             type="button"
@@ -125,20 +146,20 @@ export default function Navbar() {
           </nav>
 
           <div className="flex w-full flex-col items-center gap-4">
-            <a
-              href="#"
+            <Link
+              href="/#newsletter"
               className="inline-flex w-full max-w-md items-center justify-center rounded-full bg-[#C9B974] px-6 py-4 text-lg font-semibold text-black transition-colors duration-200 hover:bg-[#bfa76a]"
               onClick={() => setIsMenuOpen(false)}
             >
               Subscribe
-            </a>
+            </Link>
 
             <div className="flex items-center gap-3 text-sm text-zinc-600 dark:text-zinc-400">
-              <button className="inline-flex items-center gap-2 rounded-full border border-zinc-200 dark:border-zinc-700 p-3">
+              <Link href="/search" onClick={() => setIsMenuOpen(false)} aria-label="Search articles" className="inline-flex items-center gap-2 rounded-full border border-zinc-200 p-3 dark:border-zinc-700">
                 <Search size={16} />
-              </button>
-              <button className="inline-flex items-center gap-2 rounded-full border border-zinc-200 dark:border-zinc-700 p-3">
-                <Sun size={16} />
+              </Link>
+              <button type="button" onClick={toggleTheme} aria-label={isDark ? 'Use light mode' : 'Use dark mode'} className="inline-flex items-center gap-2 rounded-full border border-zinc-200 p-3 dark:border-zinc-700">
+                {isDark ? <Sun size={16} /> : <Moon size={16} />}
               </button>
             </div>
           </div>

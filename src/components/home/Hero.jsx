@@ -4,9 +4,14 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 
+const heroImages = [
+  { src: '/team/law-students-group.jpg', alt: 'Law students dressed for legal training outside their university' },
+  { src: '/team/law-students-four.jpg', alt: 'Four women law students dressed in black legal attire' },
+];
+
 export default function Hero() {
   return (
-    <section className="w-full overflow-hidden border-b border-black/10 bg-white py-12 sm:py-20 lg:py-28">
+    <section className="w-full overflow-hidden border-b border-black/10 bg-white py-12 dark:border-white/10 dark:bg-zinc-950 sm:py-20 lg:py-28">
       <style jsx>{`
         @keyframes fadeIn {
           from {
@@ -43,10 +48,10 @@ export default function Hero() {
           <p className="mb-4 text-sm font-medium uppercase tracking-[0.3em] text-zinc-500">
             My Legal Paddy
           </p>
-          <h1 className="text-3xl font-semibold leading-tight tracking-[-0.02em] text-zinc-950 min-[380px]:text-4xl sm:text-5xl lg:text-6xl">
+          <h1 className="text-3xl font-semibold leading-tight tracking-[-0.02em] text-zinc-950 dark:text-white min-[380px]:text-4xl sm:text-5xl lg:text-6xl">
             Legal Insight. Career Direction. Smarter Decisions.
           </h1>
-          <p className="mt-5 max-w-xl text-base leading-7 text-zinc-600 sm:mt-6 sm:text-xl sm:leading-8">
+          <p className="mt-5 max-w-xl text-base leading-7 text-zinc-600 dark:text-zinc-300 sm:mt-6 sm:text-xl sm:leading-8">
             A refined platform for law students and early-career legal professionals seeking clarity, direction, and thoughtful guidance.
           </p>
 
@@ -80,10 +85,6 @@ export default function Hero() {
 }
 
 function ImageSlideshow() {
-  const images = [
-    { src: '/team/law-students-group.jpg', alt: 'Law students dressed for legal training outside their university' },
-    { src: '/team/law-students-four.jpg', alt: 'Four women law students dressed in black legal attire' },
-  ];
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const intervalRef = useRef(null);
@@ -92,7 +93,7 @@ function ImageSlideshow() {
     if (intervalRef.current) clearInterval(intervalRef.current);
     if (!paused) {
       intervalRef.current = setInterval(() => {
-        setIndex((i) => (i + 1) % images.length);
+        setIndex((i) => (i + 1) % heroImages.length);
       }, 4000);
     }
     return () => clearInterval(intervalRef.current);
@@ -105,7 +106,7 @@ function ImageSlideshow() {
       onMouseLeave={() => setPaused(false)}
     >
       <div className="relative aspect-[3/4] h-full max-h-[500px] w-auto max-w-full overflow-hidden rounded-[1.5rem] border border-black/5 bg-white/90 shadow-[0_30px_60px_-40px_rgba(0,0,0,0.18)] sm:rounded-[2rem]">
-        {images.map(({ src, alt }, i) => (
+        {heroImages.map(({ src, alt }, i) => (
           <div
             key={src}
             className={`absolute left-0 top-0 h-full w-full rounded-[2rem] transition-opacity duration-900 ease-in-out ${
