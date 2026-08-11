@@ -57,7 +57,7 @@ export default function Community() {
                 size="lg"
                 className="rounded-full bg-amber-500/90 px-6 text-white shadow-[0_12px_30px_rgba(217,119,6,0.2)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-amber-600 dark:bg-amber-500 dark:hover:bg-amber-400"
               >
-                <a href="https://chat.whatsapp.com/your-community-link" target="_blank" rel="noreferrer">
+                <a href="https://chat.whatsapp.com/DfYUhgx0DWAA22zkW3Nc7Z" target="_blank" rel="noopener noreferrer">
                   Join WhatsApp Community
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </a>

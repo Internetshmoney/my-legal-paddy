@@ -27,7 +27,7 @@ const socialLinks = [
   { label: 'Instagram', href: '#', text: 'ig' },
   { label: 'X Twitter', href: '#', text: 'X' },
   { label: 'TikTok', href: '#', icon: Music2 },
-  { label: 'WhatsApp', href: '#', icon: MessageCircle },
+  { label: 'WhatsApp', href: 'https://chat.whatsapp.com/DfYUhgx0DWAA22zkW3Nc7Z', icon: MessageCircle },
 ];
 
 function FooterLink({ href = '#', children, className = '' }) {
@@ -141,7 +141,9 @@ export default function Footer() {
               Nigeria
             </p>
             <a
-              href="#"
+              href="https://chat.whatsapp.com/DfYUhgx0DWAA22zkW3Nc7Z"
+              target="_blank"
+              rel="noopener noreferrer"
               className="group mt-1 inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#c9b974]/35 bg-white px-4 py-2 text-center text-sm font-semibold text-zinc-900 transition-all duration-300 hover:-translate-y-0.5 hover:border-[#c9b974]/70 hover:bg-[#fbf6df] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#c9b974]/35 dark:bg-zinc-900 dark:text-white dark:hover:bg-[#2b2517] sm:w-fit"
             >
               Join WhatsApp Community
