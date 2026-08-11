@@ -80,7 +80,10 @@ export default function Hero() {
 }
 
 function ImageSlideshow() {
-  const images = ['/team/person-1.png', '/team/person-2.png', '/team/person-3.png', '/team/person-4.png'];
+  const images = [
+    { src: '/team/law-students-group.jpg', alt: 'Law students dressed for legal training outside their university' },
+    { src: '/team/law-students-four.jpg', alt: 'Four women law students dressed in black legal attire' },
+  ];
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const intervalRef = useRef(null);
@@ -101,8 +104,8 @@ function ImageSlideshow() {
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      <div className="relative aspect-square w-full max-w-[280px] overflow-hidden rounded-[1.5rem] border border-black/5 bg-white/90 shadow-[0_30px_60px_-40px_rgba(0,0,0,0.18)] min-[380px]:max-w-[320px] sm:max-w-[360px] sm:rounded-[2rem] md:max-w-[420px] lg:max-w-[460px]">
-        {images.map((src, i) => (
+      <div className="relative aspect-[3/4] h-full max-h-[500px] w-auto max-w-full overflow-hidden rounded-[1.5rem] border border-black/5 bg-white/90 shadow-[0_30px_60px_-40px_rgba(0,0,0,0.18)] sm:rounded-[2rem]">
+        {images.map(({ src, alt }, i) => (
           <div
             key={src}
             className={`absolute left-0 top-0 h-full w-full rounded-[2rem] transition-opacity duration-900 ease-in-out ${
@@ -112,10 +115,10 @@ function ImageSlideshow() {
           >
             <Image
               src={src}
-              alt={`Person ${i + 1}`}
+              alt={alt}
               fill
-              className="rounded-[2rem] object-contain"
-              sizes="(max-width: 768px) 360px, (max-width: 1024px) 420px, 460px"
+              className="rounded-[1.5rem] object-cover object-center sm:rounded-[2rem]"
+              sizes="(max-width: 640px) 225px, (max-width: 1024px) 315px, 375px"
               priority={i === 0}
             />
             {index === i && (
