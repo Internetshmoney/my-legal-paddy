@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, CalendarDays, Clock3, UserRound } from "lucide-react";
+import ArticleShare from "./ArticleShare";
 
 export default function ArticleDetail({ article, relatedArticles }) {
   return (
@@ -47,6 +48,8 @@ export default function ArticleDetail({ article, relatedArticles }) {
                 <span>{article.readingTime}</span>
               </div>
             </div>
+
+            <ArticleShare title={article.title} slug={article.slug} />
           </div>
         </div>
 

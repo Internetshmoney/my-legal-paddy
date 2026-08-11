@@ -38,7 +38,7 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 backdrop-blur-xl border-b border-black/10 dark:border-white/10 bg-white/70 dark:bg-black/60">
-      <div className="mx-auto flex h-20 w-full max-w-[1280px] items-center justify-between gap-2 px-4 sm:h-24 sm:gap-4 sm:px-6 lg:h-[116px]">
+      <div className="mx-auto flex h-20 w-full max-w-[1280px] items-center justify-between gap-1 px-3 sm:h-24 sm:gap-4 sm:px-6 lg:h-[116px]">
         <Link href="/" className="inline-flex min-w-0 flex-1 items-center gap-2 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#c9b974]/35 sm:gap-3 md:flex-none lg:gap-4">
           <Image
             src="/brand/my-legal-paddy-dark.png"
@@ -46,7 +46,7 @@ export default function Navbar() {
             width={384}
             height={576}
             priority
-            className="h-16 w-auto shrink-0 object-contain dark:hidden sm:h-20 lg:h-36"
+            className="h-14 w-auto shrink-0 object-contain dark:hidden sm:h-20 lg:h-36"
           />
           <Image
             src="/brand/my-legal-paddy-light.png"
@@ -54,13 +54,13 @@ export default function Navbar() {
             width={384}
             height={576}
             priority
-            className="hidden h-16 w-auto shrink-0 object-contain dark:block sm:h-20 lg:h-36"
+            className="hidden h-14 w-auto shrink-0 object-contain dark:block sm:h-20 lg:h-36"
           />
           <div className="flex min-w-0 flex-col leading-tight">
             <span className="truncate text-sm font-semibold uppercase text-black dark:text-white sm:text-base lg:text-lg">
               MY LEGAL PADDY
             </span>
-            <span className="truncate text-[10px] font-medium text-[#8f7d4d] dark:text-[#d8ca92] sm:text-xs lg:text-sm">
+            <span className="truncate text-[10px] font-medium text-[#8f7d4d] dark:text-[#d8ca92] max-[360px]:hidden sm:text-xs lg:text-sm">
               The Law Students&apos; Friend
             </span>
           </div>
@@ -86,11 +86,11 @@ export default function Navbar() {
 
         </nav>
 
-        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+        <div className="flex shrink-0 items-center gap-1 sm:gap-3">
           <Link
             href="/search"
             aria-label="Search articles"
-            className="hidden h-10 w-10 min-w-[40px] items-center justify-center rounded-full text-zinc-700 dark:text-zinc-200 transition-all duration-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 sm:inline-flex"
+            className="inline-flex h-9 w-9 min-w-9 items-center justify-center rounded-full text-zinc-700 transition-all duration-200 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800 sm:h-10 sm:w-10 sm:min-w-10"
           >
             <Search size={18} />
           </Link>
@@ -100,7 +100,7 @@ export default function Navbar() {
             aria-label={isDark ? 'Use light mode' : 'Use dark mode'}
             aria-pressed={isDark}
             onClick={toggleTheme}
-            className="hidden h-10 w-10 min-w-[40px] items-center justify-center rounded-full border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-200 transition-all duration-200 sm:inline-flex"
+            className="inline-flex h-9 w-9 min-w-9 items-center justify-center rounded-full border border-zinc-300 text-zinc-700 transition-all duration-200 dark:border-zinc-700 dark:text-zinc-200 sm:h-10 sm:w-10 sm:min-w-10"
           >
             {isDark ? <Sun size={18} /> : <Moon size={18} />}
           </button>
@@ -116,7 +116,7 @@ export default function Navbar() {
           <button
             type="button"
             aria-label="Toggle navigation menu"
-            className="inline-flex h-10 w-10 min-w-[40px] items-center justify-center rounded-md border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-200 transition-all duration-200 hover:border-zinc-900 md:hidden"
+            className="inline-flex h-9 w-9 min-w-9 items-center justify-center rounded-md border border-zinc-300 text-zinc-700 transition-all duration-200 hover:border-zinc-900 dark:border-zinc-700 dark:text-zinc-200 sm:h-10 sm:w-10 sm:min-w-10 md:hidden"
             onClick={() => setIsMenuOpen((open) => !open)}
           >
             {isMenuOpen ? <X size={18} /> : <Menu size={18} />}
