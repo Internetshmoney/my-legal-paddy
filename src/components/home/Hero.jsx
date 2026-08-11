@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 
 export default function Hero() {
   return (
-    <section className="w-full border-b border-black/10 bg-white py-16 sm:py-20 lg:py-28">
+    <section className="w-full overflow-hidden border-b border-black/10 bg-white py-12 sm:py-20 lg:py-28">
       <style jsx>{`
         @keyframes fadeIn {
           from {
@@ -43,10 +43,10 @@ export default function Hero() {
           <p className="mb-4 text-sm font-medium uppercase tracking-[0.3em] text-zinc-500">
             My Legal Paddy
           </p>
-          <h1 className="text-4xl font-semibold leading-tight tracking-[-0.02em] text-zinc-950 sm:text-5xl lg:text-6xl">
+          <h1 className="text-3xl font-semibold leading-tight tracking-[-0.02em] text-zinc-950 min-[380px]:text-4xl sm:text-5xl lg:text-6xl">
             Legal Insight. Career Direction. Smarter Decisions.
           </h1>
-          <p className="mt-6 max-w-xl text-lg leading-8 text-zinc-600 sm:text-xl">
+          <p className="mt-5 max-w-xl text-base leading-7 text-zinc-600 sm:mt-6 sm:text-xl sm:leading-8">
             A refined platform for law students and early-career legal professionals seeking clarity, direction, and thoughtful guidance.
           </p>
 
@@ -67,7 +67,7 @@ export default function Hero() {
         </div>
 
         <div className="animate-[fadeInUp_0.9s_ease-out]">
-          <div className="relative flex h-[420px] w-full items-center justify-center overflow-visible rounded-2xl lg:h-[520px]">
+          <div className="relative flex h-[300px] w-full items-center justify-center rounded-2xl min-[380px]:h-[340px] sm:h-[420px] lg:h-[520px]">
             {/* Muted gold glow behind images */}
             <div className="pointer-events-none absolute right-8 top-10 hidden h-80 w-80 translate-y-0 rounded-full bg-[#C9B974] opacity-10 blur-3xl md:block" />
 
@@ -101,7 +101,7 @@ function ImageSlideshow() {
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      <div className="relative h-[320px] w-[320px] overflow-hidden rounded-[2rem] border border-black/5 bg-white/90 shadow-[0_30px_60px_-40px_rgba(0,0,0,0.18)] sm:h-[360px] sm:w-[360px] md:h-[420px] md:w-[420px] lg:h-[460px] lg:w-[460px]">
+      <div className="relative aspect-square w-full max-w-[280px] overflow-hidden rounded-[1.5rem] border border-black/5 bg-white/90 shadow-[0_30px_60px_-40px_rgba(0,0,0,0.18)] min-[380px]:max-w-[320px] sm:max-w-[360px] sm:rounded-[2rem] md:max-w-[420px] lg:max-w-[460px]">
         {images.map((src, i) => (
           <div
             key={src}

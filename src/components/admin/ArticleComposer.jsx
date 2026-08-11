@@ -8,7 +8,7 @@ const field = 'mt-2 w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 
 export default function ArticleComposer() {
   const [state, action, pending] = useActionState(createArticle, {});
   return (
-    <form action={action} className="rounded-3xl border bg-white p-6 shadow-sm" encType="multipart/form-data">
+    <form action={action} className="min-w-0 rounded-2xl border bg-white p-4 shadow-sm sm:rounded-3xl sm:p-6" encType="multipart/form-data">
       <div className="flex items-center justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-widest text-[#8f7d4d]">New article</p><h2 className="mt-2 text-2xl font-semibold">Write and publish</h2></div></div>
       <div className="mt-6 grid gap-5 md:grid-cols-2">
         <label className="text-sm font-medium md:col-span-2">Title<input className={field} name="title" required /></label>
@@ -23,7 +23,7 @@ export default function ArticleComposer() {
       <div className="mt-5 flex flex-wrap gap-6 text-sm"><label className="flex items-center gap-2"><input name="featured" type="checkbox" /> Feature this article</label><label className="flex items-center gap-2"><input name="publishNow" type="checkbox" /> Publish immediately</label></div>
       {state?.error && <p className="mt-5 rounded-xl bg-red-50 p-3 text-sm text-red-700">{state.error}</p>}
       {state?.success && <p className="mt-5 rounded-xl bg-emerald-50 p-3 text-sm text-emerald-700">{state.success}</p>}
-      <button disabled={pending} className="mt-6 rounded-full bg-zinc-950 px-7 py-3 font-semibold text-white disabled:opacity-60">{pending ? 'Saving…' : 'Save article'}</button>
+      <button disabled={pending} className="mt-6 w-full rounded-full bg-zinc-950 px-7 py-3 font-semibold text-white disabled:opacity-60 sm:w-auto">{pending ? 'Saving…' : 'Save article'}</button>
     </form>
   );
 }

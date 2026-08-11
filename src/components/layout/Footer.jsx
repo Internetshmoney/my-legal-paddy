@@ -64,31 +64,31 @@ export default function Footer() {
     <footer className="w-full bg-[#f8f7f3] text-zinc-950 dark:bg-black dark:text-white">
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
         <div className="grid gap-10 lg:grid-cols-[1.35fr_0.7fr_0.7fr_0.85fr] lg:gap-12">
-          <div className="max-w-md">
-            <a href="#" className="inline-flex h-48 min-w-[360px] items-center gap-5 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#c9b974]/35">
+          <div className="min-w-0 max-w-md">
+            <Link href="/" className="inline-flex max-w-full items-center gap-3 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#c9b974]/35 sm:gap-5">
               <Image
                 src="/brand/my-legal-paddy-dark.png"
                 alt=""
                 width={384}
                 height={576}
-                className="h-48 w-auto object-contain dark:hidden"
+                className="h-28 w-auto shrink-0 object-contain dark:hidden sm:h-36 lg:h-48"
               />
               <Image
                 src="/brand/my-legal-paddy-light.png"
                 alt=""
                 width={384}
                 height={576}
-                className="hidden h-48 w-auto object-contain dark:block"
+                className="hidden h-28 w-auto shrink-0 object-contain dark:block sm:h-36 lg:h-48"
               />
               <span className="flex min-w-0 flex-col leading-tight">
-                <span className="whitespace-nowrap text-lg font-semibold uppercase text-black dark:text-white">
+                <span className="truncate text-base font-semibold uppercase text-black dark:text-white sm:text-lg">
                   MY LEGAL PADDY
                 </span>
-                <span className="whitespace-nowrap text-sm font-medium text-[#8f7d4d] dark:text-[#d8ca92]">
+                <span className="truncate text-xs font-medium text-[#8f7d4d] dark:text-[#d8ca92] sm:text-sm">
                   The Law Students&apos; Friend
                 </span>
               </span>
-            </a>
+            </Link>
 
             <p className="mt-6 text-sm leading-7 text-zinc-600 dark:text-zinc-400">
               Helping law students and young legal professionals discover opportunities, build careers and stay informed through thoughtful legal content and community.
@@ -131,7 +131,7 @@ export default function Footer() {
           <FooterColumn title="Contact">
             <a
               href="mailto:hello@mylegalpaddy.com"
-              className="inline-flex w-fit items-center gap-2 text-sm text-zinc-600 transition-colors duration-300 hover:text-zinc-950 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#c9b974]/35 dark:text-zinc-400 dark:hover:text-white"
+              className="inline-flex max-w-full items-center gap-2 break-all text-sm text-zinc-600 transition-colors duration-300 hover:text-zinc-950 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#c9b974]/35 dark:text-zinc-400 dark:hover:text-white"
             >
               <Mail className="size-4 text-[#9c874f]" aria-hidden="true" />
               hello@mylegalpaddy.com
@@ -142,7 +142,7 @@ export default function Footer() {
             </p>
             <a
               href="#"
-              className="group mt-1 inline-flex w-fit items-center gap-2 rounded-full border border-[#c9b974]/35 bg-white px-4 py-2 text-sm font-semibold text-zinc-900 transition-all duration-300 hover:-translate-y-0.5 hover:border-[#c9b974]/70 hover:bg-[#fbf6df] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#c9b974]/35 dark:bg-zinc-900 dark:text-white dark:hover:bg-[#2b2517]"
+              className="group mt-1 inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#c9b974]/35 bg-white px-4 py-2 text-center text-sm font-semibold text-zinc-900 transition-all duration-300 hover:-translate-y-0.5 hover:border-[#c9b974]/70 hover:bg-[#fbf6df] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#c9b974]/35 dark:bg-zinc-900 dark:text-white dark:hover:bg-[#2b2517] sm:w-fit"
             >
               Join WhatsApp Community
               <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden="true" />

@@ -19,15 +19,15 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 backdrop-blur-xl border-b border-black/10 dark:border-white/10 bg-white/70 dark:bg-black/60">
-      <div className="mx-auto flex h-[116px] w-full max-w-[1280px] items-center justify-between px-6">
-                <Link href="/" className="inline-flex h-28 min-w-[320px] items-center gap-4 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#c9b974]/35 sm:min-w-[380px]">
+      <div className="mx-auto flex h-20 w-full max-w-[1280px] items-center justify-between gap-2 px-4 sm:h-24 sm:gap-4 sm:px-6 lg:h-[116px]">
+        <Link href="/" className="inline-flex min-w-0 flex-1 items-center gap-2 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#c9b974]/35 sm:gap-3 md:flex-none lg:gap-4">
           <Image
             src="/brand/my-legal-paddy-dark.png"
             alt=""
             width={384}
             height={576}
             priority
-            className="h-36 w-auto object-contain dark:hidden sm:h-40"
+            className="h-16 w-auto shrink-0 object-contain dark:hidden sm:h-20 lg:h-36"
           />
           <Image
             src="/brand/my-legal-paddy-light.png"
@@ -35,13 +35,13 @@ export default function Navbar() {
             width={384}
             height={576}
             priority
-            className="hidden h-36 w-auto object-contain dark:block sm:h-40"
+            className="hidden h-16 w-auto shrink-0 object-contain dark:block sm:h-20 lg:h-36"
           />
           <div className="flex min-w-0 flex-col leading-tight">
-            <span className="whitespace-nowrap text-base font-semibold uppercase text-black dark:text-white sm:text-lg">
+            <span className="truncate text-sm font-semibold uppercase text-black dark:text-white sm:text-base lg:text-lg">
               MY LEGAL PADDY
             </span>
-            <span className="whitespace-nowrap text-xs font-medium text-[#8f7d4d] dark:text-[#d8ca92] sm:text-sm">
+            <span className="truncate text-[10px] font-medium text-[#8f7d4d] dark:text-[#d8ca92] sm:text-xs lg:text-sm">
               The Law Students&apos; Friend
             </span>
           </div>
@@ -67,11 +67,11 @@ export default function Navbar() {
 
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           <button
             type="button"
             aria-label="Search"
-            className="inline-flex h-10 w-10 min-w-[40px] items-center justify-center rounded-full text-zinc-700 dark:text-zinc-200 transition-all duration-200 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+            className="hidden h-10 w-10 min-w-[40px] items-center justify-center rounded-full text-zinc-700 dark:text-zinc-200 transition-all duration-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 sm:inline-flex"
           >
             <Search size={18} />
           </button>
@@ -110,14 +110,14 @@ export default function Navbar() {
         }`}
         aria-hidden={!isMenuOpen}
       >
-        <div className="mx-auto flex h-full max-w-[1280px] flex-col justify-between px-6 pt-20 pb-12">
+        <div className="mx-auto flex h-full max-w-[1280px] flex-col justify-between overflow-y-auto px-5 pb-8 pt-24 sm:px-6 sm:pb-12 sm:pt-28">
                     <nav className="flex flex-col gap-6">
             {links.map((link) => (
               <Link
                 key={link.label}
                 href={link.href}
                 onClick={() => setIsMenuOpen(false)}
-                className="text-2xl font-medium text-zinc-900 dark:text-zinc-100 transition-colors duration-200"
+                className="text-xl font-medium text-zinc-900 transition-colors duration-200 dark:text-zinc-100 sm:text-2xl"
               >
                 {link.label}
               </Link>

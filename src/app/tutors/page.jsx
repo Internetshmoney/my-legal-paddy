@@ -21,7 +21,7 @@ export default async function TutorsPage() {
       <section className="bg-[#f5f1e6] px-6 py-20 dark:bg-zinc-950">
         <div className="mx-auto max-w-[1100px] text-center">
           <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#8f7d4d]">My Legal Paddy Tutors</span>
-          <h1 className="mx-auto mt-5 max-w-4xl text-5xl font-semibold leading-[1.08] text-zinc-950 dark:text-white sm:text-6xl">Law school is easier with the right paddy.</h1>
+          <h1 className="mx-auto mt-5 max-w-4xl text-4xl font-semibold leading-[1.08] text-zinc-950 dark:text-white sm:text-6xl">Law school is easier with the right paddy.</h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">Book focused help from capable law tutors—or turn your strongest subjects into paid hourly sessions.</p>
         </div>
       </section>
