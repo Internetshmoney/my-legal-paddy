@@ -58,6 +58,12 @@ export default function ArticleDetail({ article, relatedArticles }) {
             className="blogger-article text-lg leading-9 text-foreground/90"
             dangerouslySetInnerHTML={{ __html: article.content || `<p>${article.excerpt}</p>` }}
           />
+          <ArticleShare
+            title={article.title}
+            slug={article.slug}
+            heading="Enjoyed this article? You can share it here."
+            prominent
+          />
         </div>
       </div>
 
