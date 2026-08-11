@@ -12,7 +12,7 @@ const links = [
   { label: 'Tutors', href: '/tutors' },
   { label: 'Career Quiz', href: '/career-prediction' },
   { label: 'About', href: '/about' },
-  { label: 'Contact', href: 'mailto:mylegalpaddy@gmail.com' },
+  { label: 'Contact', href: '/contact' },
 ];
 
 function subscribeToTheme(callback) {

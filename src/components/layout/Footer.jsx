@@ -4,6 +4,7 @@ import {
   MapPin,
   MessageCircle,
   Music2,
+  Phone,
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -13,7 +14,7 @@ const exploreLinks = [
   { label: 'Articles', href: '/articles' },
   { label: 'Discover Your Legal Path', href: '/career-prediction' },
   { label: 'About', href: '/about' },
-  { label: 'Contact', href: 'mailto:mylegalpaddy@gmail.com' },
+  { label: 'Contact', href: '/contact' },
 ];
 const resourceLinks = [
   'Privacy Policy',
@@ -135,6 +136,13 @@ export default function Footer() {
             >
               <Mail className="size-4 text-[#9c874f]" aria-hidden="true" />
               mylegalpaddy@gmail.com
+            </a>
+            <a
+              href="tel:+2349058607390"
+              className="inline-flex items-center gap-2 text-sm text-zinc-600 transition-colors duration-300 hover:text-zinc-950 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#c9b974]/35 dark:text-zinc-400 dark:hover:text-white"
+            >
+              <Phone className="size-4 text-[#9c874f]" aria-hidden="true" />
+              +234 905 860 7390
             </a>
             <p className="inline-flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
               <MapPin className="size-4 text-[#9c874f]" aria-hidden="true" />
