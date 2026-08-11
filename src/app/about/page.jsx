@@ -18,8 +18,8 @@ export const metadata = {
     description: 'A student-focused legal education platform helping university law students learn, connect and build confident careers.',
     images: [{
       url: '/team/msendoo-stephanie-asuga.jpeg',
-      width: 837,
-      height: 969,
+      width: 1491,
+      height: 2048,
       alt: 'Msendoo Stephanie Asuga, founder of My Legal Paddy',
     }],
   },
@@ -94,8 +94,8 @@ export default function AboutPage() {
               <Image
                 src="/team/msendoo-stephanie-asuga.jpeg"
                 alt="Msendoo Stephanie Asuga, founder of My Legal Paddy"
-                width={837}
-                height={969}
+                width={1491}
+                height={2048}
                 className="h-auto w-full object-cover"
                 sizes="(max-width: 1024px) 90vw, 420px"
               />
