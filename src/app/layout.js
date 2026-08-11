@@ -13,6 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
+  metadataBase: new URL("https://mylegalpaddy.app"),
   title: "My Legal Paddy",
   description: "Legal insight, career direction and tutoring for university law students.",
 };

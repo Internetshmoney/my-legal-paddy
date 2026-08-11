@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, ChevronLeft, ChevronRight, Search } from 'lucide-react';
+import { ArrowRight, Search } from 'lucide-react';
 
 import ArticleCard from '@/components/articles/ArticleCard';
 import Footer from '@/components/layout/Footer';
@@ -10,18 +10,16 @@ export const dynamic = 'force-dynamic';
 
 const categories = [
   'All',
-  'Technology Law',
-  'Corporate Law',
-  'Commercial Law',
-  'Criminal Law',
+  'Commercial & Corporate Law',
   'Constitutional Law',
-  'Tort Law',
+  'Criminal Law & Procedure',
+  'Environmental Law',
   'Human Rights',
-  'International Law',
-  'Legal Research & Writing',
-  'Career',
-  'Student Life',
-  'Opportunities',
+  'Intellectual Property',
+  'Jurisprudence',
+  'Law of Torts',
+  'Legal Skills & Study',
+  'Technology & Law',
 ];
 
 export const metadata = {
@@ -30,10 +28,20 @@ export const metadata = {
     'Premium legal insights for law students and young professionals across Africa.',
 };
 
-export default async function ArticlesPage() {
-  const articles = await getPublicArticles();
+export default async function ArticlesPage({ searchParams }) {
+  const params = await searchParams;
+  const selectedCategory = categories.includes(params.category) ? params.category : 'All';
+  const query = String(params.q || '').trim();
+  const normalizedQuery = query.toLowerCase();
+  const allArticles = await getPublicArticles();
+  const articles = allArticles.filter((article) => {
+    const categoryMatches = selectedCategory === 'All' || article.category === selectedCategory;
+    const queryMatches = !query || [article.title, article.excerpt, article.author, article.category]
+      .some((value) => String(value || '').toLowerCase().includes(normalizedQuery));
+    return categoryMatches && queryMatches;
+  });
   const featuredArticle = articles.find((article) => article.featured) ?? articles[0];
-  const latestArticles = articles.filter((article) => article.id !== featuredArticle.id);
+  const latestArticles = featuredArticle ? articles.filter((article) => article.id !== featuredArticle.id) : [];
 
   return (
     <main className="min-h-screen bg-white text-zinc-950 dark:bg-zinc-950 dark:text-white">
@@ -53,7 +61,8 @@ export default async function ArticlesPage() {
             </p>
           </div>
 
-          <div className="mx-auto mt-10 max-w-3xl">
+          <form action="/articles" className="mx-auto mt-10 max-w-3xl">
+            {selectedCategory !== 'All' ? <input type="hidden" name="category" value={selectedCategory} /> : null}
             <div className="flex min-h-16 items-center gap-3 rounded-[1.5rem] border border-black/10 bg-white px-5 shadow-[0_24px_70px_-55px_rgba(0,0,0,0.55)] transition-all duration-300 focus-within:border-[#c9b974]/70 focus-within:shadow-[0_28px_90px_-62px_rgba(0,0,0,0.6)] dark:border-white/10 dark:bg-zinc-950">
               <Search className="size-5 shrink-0 text-[#8f7d4d]" aria-hidden="true" />
               <label htmlFor="article-search" className="sr-only">
@@ -61,22 +70,28 @@ export default async function ArticlesPage() {
               </label>
               <input
                 id="article-search"
+                name="q"
                 type="search"
+                defaultValue={query}
                 placeholder="Search articles..."
                 className="h-14 min-w-0 flex-1 bg-transparent text-base text-zinc-950 outline-none placeholder:text-zinc-400 dark:text-white dark:placeholder:text-zinc-500"
               />
+              <button className="rounded-full bg-zinc-950 px-4 py-2 text-sm font-semibold text-white dark:bg-white dark:text-zinc-950">Search</button>
             </div>
-          </div>
+          </form>
 
           <div className="mt-8 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <div className="flex min-w-max gap-3 lg:min-w-0 lg:flex-wrap lg:justify-center">
               {categories.map((category) => {
-                const isActive = category === 'All';
+                const isActive = category === selectedCategory;
+                const href = new URLSearchParams();
+                if (category !== 'All') href.set('category', category);
+                if (query) href.set('q', query);
 
                 return (
-                  <button
+                  <Link
                     key={category}
-                    type="button"
+                    href={href.size ? `/articles?${href.toString()}` : '/articles'}
                     className={`rounded-full border px-4 py-2 text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 ${
                       isActive
                         ? 'border-[#c9b974]/60 bg-[#fbf6df] text-[#75643d] shadow-[0_14px_35px_-28px_rgba(0,0,0,0.5)] dark:bg-[#2b2517] dark:text-[#dfcf95]'
@@ -85,7 +100,7 @@ export default async function ArticlesPage() {
                     aria-pressed={isActive}
                   >
                     {category}
-                  </button>
+                  </Link>
                 );
               })}
             </div>
@@ -93,7 +108,7 @@ export default async function ArticlesPage() {
         </div>
       </section>
 
-      <section className="border-b border-black/10 bg-white py-16 dark:border-white/10 dark:bg-zinc-950 sm:py-20">
+      {featuredArticle ? <><section className="border-b border-black/10 bg-white py-16 dark:border-white/10 dark:bg-zinc-950 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <article className="grid overflow-hidden rounded-[2rem] border border-black/10 bg-[#f8f7f3] shadow-[0_30px_95px_-65px_rgba(0,0,0,0.55)] dark:border-white/10 dark:bg-zinc-900 lg:grid-cols-[1.12fr_0.88fr]">
             <Link href={`/articles/${featuredArticle.slug}`} className="group block overflow-hidden bg-zinc-200 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#c9b974]/35 dark:bg-zinc-800">
@@ -143,7 +158,7 @@ export default async function ArticlesPage() {
                 LATEST ARTICLES
               </p>
               <h2 className="mt-3 text-3xl font-semibold text-zinc-950 dark:text-white sm:text-4xl">
-                New thinking for modern legal minds
+                {selectedCategory === 'All' ? 'New thinking for modern legal minds' : selectedCategory}
               </h2>
             </div>
             <p className="max-w-xl text-sm leading-7 text-zinc-600 dark:text-zinc-300">
@@ -157,24 +172,8 @@ export default async function ArticlesPage() {
             ))}
           </div>
 
-          <nav className="mt-12 flex items-center justify-center gap-3" aria-label="Articles pagination">
-            <button
-              type="button"
-              className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-5 py-3 text-sm font-semibold text-zinc-600 transition-all duration-300 hover:-translate-y-0.5 hover:border-[#c9b974]/50 hover:text-zinc-950 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#c9b974]/35 dark:border-white/10 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:text-white"
-            >
-              <ChevronLeft className="size-4" aria-hidden="true" />
-              Previous
-            </button>
-            <button
-              type="button"
-              className="inline-flex items-center gap-2 rounded-full border border-[#c9b974]/50 bg-[#fbf6df] px-5 py-3 text-sm font-semibold text-[#75643d] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#f3e8bd] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#c9b974]/35 dark:bg-[#2b2517] dark:text-[#dfcf95]"
-            >
-              Next
-              <ChevronRight className="size-4" aria-hidden="true" />
-            </button>
-          </nav>
         </div>
-      </section>
+      </section></> : <section className="px-4 py-20 text-center sm:px-6"><h2 className="text-2xl font-semibold">No articles found</h2><p className="mt-3 text-zinc-600 dark:text-zinc-300">Try another area of law or a broader search.</p><Link href="/articles" className="mt-6 inline-flex rounded-full bg-zinc-950 px-5 py-3 text-sm font-semibold text-white dark:bg-white dark:text-zinc-950">View all articles</Link></section>}
 
       <Footer />
     </main>

@@ -20,6 +20,23 @@ export async function generateMetadata({ params }) {
   return {
     title: `${article.title} | My Legal Paddy`,
     description: article.excerpt,
+    alternates: { canonical: `/articles/${article.slug}` },
+    openGraph: {
+      type: 'article',
+      url: `/articles/${article.slug}`,
+      siteName: 'My Legal Paddy',
+      title: article.title,
+      description: article.excerpt,
+      publishedTime: article.publishedAt,
+      authors: [article.author],
+      images: [{ url: article.image, alt: article.title }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: article.title,
+      description: article.excerpt,
+      images: [article.image],
+    },
   };
 }
 
