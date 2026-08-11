@@ -11,8 +11,8 @@ const links = [
   { label: 'Articles', href: '/articles' },
   { label: 'Tutors', href: '/tutors' },
   { label: 'Career Quiz', href: '/career-prediction' },
-  { label: 'About', href: '#' },
-  { label: 'Contact', href: '#' },
+  { label: 'About', href: '/about' },
+  { label: 'Contact', href: 'mailto:mylegalpaddy@gmail.com' },
 ];
 
 function subscribeToTheme(callback) {

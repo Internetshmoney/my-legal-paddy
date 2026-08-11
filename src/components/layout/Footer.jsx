@@ -12,8 +12,8 @@ const exploreLinks = [
   { label: 'Home', href: '/' },
   { label: 'Articles', href: '/articles' },
   { label: 'Discover Your Legal Path', href: '/career-prediction' },
-  { label: 'About', href: '#' },
-  { label: 'Contact', href: '#' },
+  { label: 'About', href: '/about' },
+  { label: 'Contact', href: 'mailto:mylegalpaddy@gmail.com' },
 ];
 const resourceLinks = [
   'Privacy Policy',
@@ -23,7 +23,7 @@ const resourceLinks = [
 ];
 
 const socialLinks = [
-  { label: 'LinkedIn', href: '#', text: 'in' },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/company/my-legal-paddy/', text: 'in' },
   { label: 'Instagram', href: '#', text: 'ig' },
   { label: 'X Twitter', href: '#', text: 'X' },
   { label: 'TikTok', href: '#', icon: Music2 },
@@ -130,11 +130,11 @@ export default function Footer() {
 
           <FooterColumn title="Contact">
             <a
-              href="mailto:hello@mylegalpaddy.com"
+              href="mailto:mylegalpaddy@gmail.com"
               className="inline-flex max-w-full items-center gap-2 break-all text-sm text-zinc-600 transition-colors duration-300 hover:text-zinc-950 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#c9b974]/35 dark:text-zinc-400 dark:hover:text-white"
             >
               <Mail className="size-4 text-[#9c874f]" aria-hidden="true" />
-              hello@mylegalpaddy.com
+              mylegalpaddy@gmail.com
             </a>
             <p className="inline-flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
               <MapPin className="size-4 text-[#9c874f]" aria-hidden="true" />

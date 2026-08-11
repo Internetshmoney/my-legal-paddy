@@ -15,6 +15,7 @@ export default async function sitemap() {
   const pages = [
     { path: '', changeFrequency: 'weekly', priority: 1 },
     { path: '/articles', changeFrequency: 'daily', priority: 0.9 },
+    { path: '/about', changeFrequency: 'monthly', priority: 0.8 },
     { path: '/tutors', changeFrequency: 'weekly', priority: 0.8 },
     { path: '/career-prediction', changeFrequency: 'monthly', priority: 0.7 },
   ];

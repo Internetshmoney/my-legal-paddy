@@ -66,6 +66,13 @@ const organizationSchema = {
   url: "https://mylegalpaddy.app",
   logo: "https://mylegalpaddy.app/icon.png",
   description: "A legal education, career guidance and tutoring platform for university law students.",
+  email: "mylegalpaddy@gmail.com",
+  founder: {
+    "@type": "Person",
+    name: "Msendoo Stephanie Asuga",
+    sameAs: "https://www.linkedin.com/in/msendoo-stephanie-asuga-413789248/",
+  },
+  sameAs: ["https://www.linkedin.com/company/my-legal-paddy/"],
   areaServed: "Nigeria",
 };
 
