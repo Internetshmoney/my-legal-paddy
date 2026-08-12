@@ -67,7 +67,6 @@ const organizationSchema = {
   logo: "https://mylegalpaddy.app/icon.png",
   description: "A legal education, career guidance and tutoring platform for university law students.",
   email: "mylegalpaddy@gmail.com",
-  telephone: "+2349058607390",
   founder: {
     "@type": "Person",
     name: "Msendoo Stephanie Asuga",

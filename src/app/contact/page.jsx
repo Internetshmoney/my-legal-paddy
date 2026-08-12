@@ -1,15 +1,14 @@
-import { ArrowUpRight, Clock3, Mail, MapPin, MessageCircle, Phone } from 'lucide-react';
+import { ArrowUpRight, Clock3, Mail, MapPin, MessageCircle } from 'lucide-react';
 
 import Footer from '@/components/layout/Footer';
 import Navbar from '@/components/layout/Navbar';
 
 const email = 'mylegalpaddy@gmail.com';
-const phone = '+2349058607390';
-const whatsappUrl = 'https://wa.me/2349058607390';
+const whatsappCommunityUrl = 'https://chat.whatsapp.com/DfYUhgx0DWAA22zkW3Nc7Z';
 
 export const metadata = {
   title: 'Contact Us',
-  description: 'Contact My Legal Paddy by email, telephone or WhatsApp for questions about legal articles, tutoring, partnerships and our student community.',
+  description: 'Contact My Legal Paddy by email or join our WhatsApp community for legal articles, tutoring, partnerships and student opportunities.',
   alternates: { canonical: '/contact' },
   openGraph: {
     type: 'website',
@@ -28,10 +27,8 @@ const contactSchema = {
     '@type': 'Organization',
     '@id': 'https://mylegalpaddy.app/#organization',
     email,
-    telephone: phone,
     contactPoint: {
       '@type': 'ContactPoint',
-      telephone: phone,
       email,
       contactType: 'customer support',
       areaServed: 'NG',
@@ -50,20 +47,12 @@ const contactOptions = [
     action: 'Send an email',
   },
   {
-    icon: Phone,
-    label: 'Call us',
-    value: '+234 905 860 7390',
-    description: 'Speak directly with the My Legal Paddy team.',
-    href: `tel:${phone}`,
-    action: 'Call now',
-  },
-  {
     icon: MessageCircle,
-    label: 'WhatsApp us',
-    value: '+234 905 860 7390',
-    description: 'Send us a quick message and we will respond as soon as possible.',
-    href: whatsappUrl,
-    action: 'Start a chat',
+    label: 'Join our community',
+    value: 'My Legal Paddy on WhatsApp',
+    description: 'Meet other law students, receive opportunities and follow community conversations.',
+    href: whatsappCommunityUrl,
+    action: 'Join the WhatsApp group',
   },
 ];
 
@@ -90,7 +79,7 @@ export default function ContactPage() {
 
         <section className="px-4 py-16 sm:px-6 sm:py-24">
           <div className="mx-auto max-w-6xl">
-            <div className="grid gap-6 md:grid-cols-3">
+            <div className="mx-auto grid max-w-4xl gap-6 md:grid-cols-2">
               {contactOptions.map(({ icon: Icon, label, value, description, href, action }) => (
                 <article key={label} className="flex flex-col rounded-[2rem] border border-black/10 bg-white p-7 shadow-[0_28px_80px_-58px_rgba(0,0,0,.55)] dark:border-white/10 dark:bg-zinc-900 sm:p-8">
                   <div className="flex size-12 items-center justify-center rounded-2xl bg-[#f3e8bd] text-[#75643d]">
