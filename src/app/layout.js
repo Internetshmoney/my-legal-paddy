@@ -1,4 +1,5 @@
 import { Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import Script from "next/script";
 import "./globals.css";
 
@@ -103,6 +104,7 @@ export default function RootLayout({ children }) {
         />
         <Script id="theme-init" strategy="beforeInteractive">{`try{const t=localStorage.getItem('mlp-theme');const d=t==='dark'||(!t&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d)}catch(e){}`}</Script>
         {children}
+        <Analytics />
       </body>
     </html>
   );
