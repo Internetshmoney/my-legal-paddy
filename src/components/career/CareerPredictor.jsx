@@ -328,13 +328,19 @@ export default function CareerPredictor() {
   }
 
   const question = questions[step];
+  const [artStyle, artIndex] = question.art;
+  const artColumn = artIndex % 3;
+  const artRow = Math.floor(artIndex / 3);
   return <section className="px-6 py-16 sm:py-24"><div className="mx-auto max-w-3xl">
     <div className="mb-7 flex items-center justify-between text-sm font-medium text-zinc-500"><span>Case file {step + 1} of {questions.length}</span><span>{Math.round(((step + 1) / questions.length) * 100)}%</span></div>
     <div className="h-2 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800"><div className="h-full rounded-full bg-[#C9B974] transition-all" style={{ width: `${((step + 1) / questions.length) * 100}%` }} /></div>
     <div className="mt-8 overflow-hidden rounded-[2rem] border border-black/10 bg-white shadow-[0_30px_90px_-60px_rgba(0,0,0,.45)] dark:border-white/10 dark:bg-zinc-900">
-      <div className="bg-zinc-950 p-6 text-white sm:p-9">
-        <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-bold uppercase tracking-[.18em] text-[#dfd29a]"><span className="flex items-center gap-2"><Gavel size={17} /> Your case</span><span className="rounded-full border border-[#C9B974]/50 px-3 py-1">Read this first</span></div>
-        <p className="mt-5 text-xl font-semibold leading-8 sm:text-2xl sm:leading-9">{question.scenario}</p>
+      <div className="grid md:grid-cols-[.9fr_1.1fr]">
+        <div role="img" aria-label={`Illustration for this case: ${question.scenario}`} className="aspect-square w-full bg-no-repeat" style={{ backgroundImage: `url(/career/scenario-cases-${artStyle}.webp)`, backgroundPosition: `${artColumn * 50}% ${artRow * 50}%`, backgroundSize: '300% 300%' }} />
+        <div className="bg-zinc-950 p-6 text-white sm:p-9">
+          <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-bold uppercase tracking-[.18em] text-[#dfd29a]"><span className="flex items-center gap-2"><Gavel size={17} /> Your case</span><span className="rounded-full border border-[#C9B974]/50 px-3 py-1">Read this first</span></div>
+          <p className="mt-5 text-xl font-semibold leading-8 sm:text-2xl sm:leading-9">{question.scenario}</p>
+        </div>
       </div>
       <div className="p-6 sm:p-10"><div className="flex items-start gap-4"><span className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#f3e8bd] text-[#75643d] sm:flex"><Scale size={23} /></span><h2 className="text-2xl font-semibold leading-tight sm:text-3xl">{question.text}</h2></div><div className="mt-8 grid gap-3">{question.options.map(([label], index) => <button key={label} onClick={() => choose(index)} className="group flex w-full items-center justify-between rounded-2xl border border-black/10 px-5 py-4 text-left font-medium leading-6 transition hover:-translate-y-0.5 hover:border-[#C9B974] hover:bg-[#fbf6df] dark:border-white/10 dark:hover:bg-[#2b2517]"><span>{label}</span><ArrowRight className="ml-4 shrink-0 text-zinc-400 transition group-hover:translate-x-1 group-hover:text-[#8f7d4d]" size={18} /></button>)}</div></div>
     </div>

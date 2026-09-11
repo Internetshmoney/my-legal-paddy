@@ -19,6 +19,11 @@ const scenarios = [
   { id: 'constitution', context: 'Nigeria wants a fairer way to choose senior judges. Politicians want a say, while judges worry that politics could control the courts.' },
 ];
 
+const scenarioArt = {
+  injunction: ['3d', 0], fintech: ['3d', 1], eviction: ['3d', 2], oilspill: ['3d', 3], wrongfularrest: ['3d', 4], climatebill: ['3d', 5], inheritance: ['3d', 6], sportsdeal: ['3d', 7], constitution: ['3d', 8],
+  deepfake: ['anime', 0], music: ['anime', 1], cyberattack: ['anime', 2], merger: ['anime', 3], discipline: ['anime', 4], healthdata: ['anime', 5], marketplace: ['anime', 6], procurement: ['anime', 7], refugeeclinic: ['anime', 8],
+};
+
 const decisionAngles = [
   { id: 'first-move', prompt: 'What would you want to do first?', options: [
     ['Build a strong argument and prepare to defend it', { advocacy: 3, public: 1 }],
@@ -63,6 +68,7 @@ export const careerQuestionBank = scenarios.flatMap((scenario) => decisionAngles
   scenarioId: scenario.id,
   angleId: angle.id,
   scenario: scenario.context,
+  art: scenarioArt[scenario.id],
   text: angle.prompt,
   options: angle.options,
 })));
@@ -80,11 +86,13 @@ export function selectCareerQuestions(count = 12, recentIds = []) {
   const recent = new Set(recentIds);
   const selected = [];
   const usedScenarios = new Set();
+  const firstStyle = Math.random() < 0.5 ? '3d' : 'anime';
 
   while (selected.length < count) {
     let added = false;
     for (const angle of shuffled(decisionAngles)) {
-      const candidates = shuffled(careerQuestionBank.filter((question) => question.angleId === angle.id && !usedScenarios.has(question.scenarioId)));
+      const desiredStyle = selected.length % 2 === 0 ? firstStyle : firstStyle === '3d' ? 'anime' : '3d';
+      const candidates = shuffled(careerQuestionBank.filter((question) => question.angleId === angle.id && question.art[0] === desiredStyle && !usedScenarios.has(question.scenarioId)));
       const question = candidates.find(({ id }) => !recent.has(id)) || candidates[0];
       if (!question) continue;
       selected.push(question);
@@ -95,5 +103,5 @@ export function selectCareerQuestions(count = 12, recentIds = []) {
     if (!added) break;
   }
 
-  return shuffled(selected);
+  return selected;
 }

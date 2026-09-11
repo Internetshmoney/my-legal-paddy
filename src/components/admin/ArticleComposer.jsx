@@ -5,8 +5,8 @@ import { AlignCenter, AlignJustify, AlignLeft, AlignRight, Bold, Italic, Link as
 import { createArticle } from '@/app/admin/actions';
 import { updateDraftArticle } from '@/app/admin/articles/actions';
 
-const field = 'mt-2 w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 outline-none focus:border-[#9c874b]';
-const toolButton = 'grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-zinc-200 bg-white text-zinc-700 transition hover:border-[#b5a05e] hover:bg-[#faf7eb] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8f7d4d]';
+const field = 'mt-2 min-w-0 w-full rounded-xl border border-zinc-200 bg-white px-3 py-3 text-sm outline-none focus:border-[#9c874b] sm:px-4 sm:text-base';
+const toolButton = 'grid h-10 w-full place-items-center rounded-lg border border-zinc-200 bg-white text-zinc-700 transition hover:border-[#b5a05e] hover:bg-[#faf7eb] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8f7d4d] sm:h-9 sm:w-9 sm:shrink-0';
 
 function RichTextEditor({ value, onChange }) {
   const editorRef = useRef(null);
@@ -19,14 +19,17 @@ function RichTextEditor({ value, onChange }) {
   }
 
   function command(name, commandValue = null) {
-    editorRef.current?.focus();
+    const editor = editorRef.current;
+    if (!editor) return;
     if (selectionRef.current) {
       const selection = window.getSelection();
       selection?.removeAllRanges();
       selection?.addRange(selectionRef.current);
     }
+    editor.focus({ preventScroll: true });
+    document.execCommand('styleWithCSS', false, true);
     document.execCommand(name, false, commandValue);
-    onChange(editorRef.current?.innerHTML || '');
+    onChange(editor.innerHTML);
     rememberSelection();
   }
 
@@ -47,21 +50,21 @@ function RichTextEditor({ value, onChange }) {
   ];
 
   return <div className="mt-2 overflow-hidden rounded-xl border border-zinc-200 bg-white focus-within:border-[#9c874b]">
-    <div className="flex flex-wrap gap-1.5 border-b border-zinc-200 bg-zinc-50 p-2" role="toolbar" aria-label="Article formatting tools">
-      <select aria-label="Text style" defaultValue="p" onMouseDown={rememberSelection} onChange={(event) => command('formatBlock', event.target.value)} className="h-9 min-w-28 rounded-lg border border-zinc-200 bg-white px-2 text-sm">
+    <div className="grid grid-cols-5 gap-1.5 border-b border-zinc-200 bg-zinc-50 p-2 sm:flex sm:flex-wrap" role="toolbar" aria-label="Article formatting tools" onPointerDownCapture={rememberSelection}>
+      <select aria-label="Text style" defaultValue="p" onChange={(event) => command('formatBlock', `<${event.target.value}>`)} className="col-span-2 h-10 min-w-0 rounded-lg border border-zinc-200 bg-white px-2 text-sm sm:h-9 sm:min-w-28">
         <option value="p">Paragraph</option><option value="h2">Heading 2</option><option value="h3">Heading 3</option><option value="blockquote">Quote</option>
       </select>
-      <select aria-label="Font family" defaultValue="Arial" onMouseDown={rememberSelection} onChange={(event) => command('fontName', event.target.value)} className="h-9 min-w-28 rounded-lg border border-zinc-200 bg-white px-2 text-sm">
+      <select aria-label="Font family" defaultValue="Arial" onChange={(event) => command('fontName', event.target.value)} className="col-span-2 h-10 min-w-0 rounded-lg border border-zinc-200 bg-white px-2 text-sm sm:h-9 sm:min-w-28">
         <option value="Arial">Arial</option><option value="Georgia">Georgia</option><option value="Times New Roman">Times</option><option value="Verdana">Verdana</option>
       </select>
-      <select aria-label="Font size" defaultValue="3" onMouseDown={rememberSelection} onChange={(event) => command('fontSize', event.target.value)} className="h-9 w-24 rounded-lg border border-zinc-200 bg-white px-2 text-sm">
+      <select aria-label="Font size" defaultValue="3" onChange={(event) => command('fontSize', event.target.value)} className="h-10 min-w-0 rounded-lg border border-zinc-200 bg-white px-1 text-xs sm:h-9 sm:w-24 sm:px-2 sm:text-sm">
         <option value="2">Small</option><option value="3">Normal</option><option value="4">Large</option><option value="5">X-large</option><option value="6">Display</option>
       </select>
       {buttons.map(([name, Icon, label]) => <button key={name} type="button" className={toolButton} title={label} aria-label={label} onMouseDown={(event) => event.preventDefault()} onClick={() => command(name)}><Icon size={17} /></button>)}
       <button type="button" className={toolButton} title="Add link" aria-label="Add link" onMouseDown={(event) => event.preventDefault()} onClick={addLink}><LinkIcon size={17} /></button>
-      <label className="flex h-9 items-center gap-2 rounded-lg border border-zinc-200 bg-white px-2 text-xs font-medium text-zinc-600">Colour<input type="color" aria-label="Text colour" defaultValue="#18181b" onMouseDown={rememberSelection} onChange={(event) => command('foreColor', event.target.value)} className="h-6 w-7 cursor-pointer border-0 bg-transparent p-0" /></label>
+      <label className="col-span-2 flex h-10 min-w-0 items-center justify-center gap-2 rounded-lg border border-zinc-200 bg-white px-2 text-xs font-medium text-zinc-600 sm:col-auto sm:h-9">Colour<input type="color" aria-label="Text colour" defaultValue="#18181b" onChange={(event) => command('foreColor', event.target.value)} className="h-6 w-7 cursor-pointer border-0 bg-transparent p-0" /></label>
     </div>
-    <div ref={editorRef} contentEditable suppressContentEditableWarning role="textbox" aria-multiline="true" aria-label="Article body" onInput={(event) => onChange(event.currentTarget.innerHTML)} onKeyUp={rememberSelection} onMouseUp={rememberSelection} onBlur={rememberSelection} dangerouslySetInnerHTML={{ __html: initialValue }} className="article-content min-h-80 px-4 py-4 text-base leading-7 outline-none sm:min-h-96 sm:px-6" />
+    <div ref={editorRef} contentEditable suppressContentEditableWarning role="textbox" aria-multiline="true" aria-label="Article body" onInput={(event) => onChange(event.currentTarget.innerHTML)} onKeyUp={rememberSelection} onPointerUp={rememberSelection} onSelect={rememberSelection} onBlur={rememberSelection} dangerouslySetInnerHTML={{ __html: initialValue }} className="article-content min-h-72 max-w-full overflow-x-auto break-words px-3 py-4 text-base leading-7 outline-none [overflow-wrap:anywhere] sm:min-h-96 sm:px-6" />
     <input type="hidden" name="content" value={value} />
   </div>;
 }
@@ -83,16 +86,16 @@ export default function ArticleComposer({ article = null }) {
     return () => window.removeEventListener('keydown', closeOnEscape);
   }, [previewOpen]);
 
-  return <form action={action} className="min-w-0 rounded-2xl border bg-white p-4 shadow-sm sm:rounded-3xl sm:p-6" encType="multipart/form-data">
+  return <form action={action} className="w-full min-w-0 overflow-hidden rounded-2xl border bg-white p-3 shadow-sm sm:rounded-3xl sm:p-6" encType="multipart/form-data">
     {editing ? <input type="hidden" name="id" value={article.id} /> : null}
     <div><p className="text-xs font-bold uppercase tracking-widest text-[#8f7d4d]">{editing ? 'Edit draft' : 'New article'}</p><h2 className="mt-2 text-2xl font-semibold">{editing ? 'Refine your article' : 'Write and publish'}</h2></div>
-    <div className="mt-6 grid gap-5 md:grid-cols-2">
+    <div className="mt-6 grid min-w-0 gap-5 md:grid-cols-2 [&>label]:min-w-0">
       <label className="text-sm font-medium md:col-span-2">Title <span className="float-right text-xs font-normal text-zinc-500">{title.length}/255</span><input className={field} name="title" maxLength="255" required value={title} onChange={(event) => setTitle(event.target.value)} /></label>
       <label className="text-sm font-medium">Slug (optional)<input className={field} name="slug" maxLength="90" placeholder="generated-from-title" defaultValue={article?.slug || ''} /></label>
       <label className="text-sm font-medium">Category<input className={field} name="category" maxLength="100" required placeholder="e.g. Criminal Law" defaultValue={article?.category || ''} /></label>
       <label className="text-sm font-medium md:col-span-2">Writer’s name<input className={field} name="author" maxLength="150" required placeholder="Enter the actual writer for this article" defaultValue={article?.author || ''} /></label>
       <label className="text-sm font-medium md:col-span-2">Summary <span className="float-right text-xs font-normal text-zinc-500">{excerpt.length}/2000</span><textarea className={field} name="excerpt" maxLength="2000" rows="3" required value={excerpt} onChange={(event) => setExcerpt(event.target.value)} /></label>
-      <label className="text-sm font-medium">Cover image upload<input className={field} name="image" type="file" accept="image/jpeg,image/png,image/webp" /><span className="mt-1 block text-xs font-normal text-zinc-500">{editing ? 'Leave empty to keep the current upload.' : 'JPEG, PNG or WebP; maximum 10 MB.'}</span></label>
+      <label className="text-sm font-medium">Cover image upload<input className={`${field} file:mr-2 file:max-w-[52%] file:truncate`} name="image" type="file" accept="image/jpeg,image/png,image/webp" /><span className="mt-1 block text-xs font-normal text-zinc-500">{editing ? 'Leave empty to keep the current upload.' : 'JPEG, PNG or WebP; maximum 10 MB.'}</span></label>
       <label className="text-sm font-medium">Or approved cover image URL<input className={field} name="imageUrl" type="url" maxLength="2000" defaultValue={article?.imageUrl || ''} /></label>
       <div className="md:col-span-2"><div className="flex flex-wrap justify-between gap-2 text-sm font-medium"><span>Article body</span><span className="text-xs font-normal text-zinc-500">{content.length}/100000 characters</span></div><RichTextEditor value={content} onChange={setContent} /></div>
     </div>
