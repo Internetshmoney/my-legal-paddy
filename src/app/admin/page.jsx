@@ -43,6 +43,9 @@ export default async function AdminPage() {
             <h3 className="mt-1 font-semibold">{article.title}</h3>
             <p className="mt-1 text-sm text-zinc-500">By {article.author}</p>
             <div className="mt-4 flex flex-wrap gap-2">
+              <Link href={`/admin/articles/${article.id}/preview`} className="rounded-full border border-[#b5a05e] bg-[#faf7eb] px-3 py-1.5 text-xs font-semibold text-[#695a2f]">
+                Preview full article
+              </Link>
               <form action={setArticleStatus}>
                 <input type="hidden" name="id" value={article.id}/>
                 <input type="hidden" name="status" value={article.status === 'published' ? 'draft' : 'published'}/>
