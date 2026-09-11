@@ -50,19 +50,23 @@ function RichTextEditor({ value, onChange }) {
   ];
 
   return <div className="mt-2 overflow-hidden rounded-xl border border-zinc-200 bg-white focus-within:border-[#9c874b]">
-    <div className="grid grid-cols-5 gap-1.5 border-b border-zinc-200 bg-zinc-50 p-2 sm:flex sm:flex-wrap" role="toolbar" aria-label="Article formatting tools" onPointerDownCapture={rememberSelection}>
-      <select aria-label="Text style" defaultValue="p" onChange={(event) => command('formatBlock', `<${event.target.value}>`)} className="col-span-2 h-10 min-w-0 rounded-lg border border-zinc-200 bg-white px-2 text-sm sm:h-9 sm:min-w-28">
-        <option value="p">Paragraph</option><option value="h2">Heading 2</option><option value="h3">Heading 3</option><option value="blockquote">Quote</option>
-      </select>
-      <select aria-label="Font family" defaultValue="Arial" onChange={(event) => command('fontName', event.target.value)} className="col-span-2 h-10 min-w-0 rounded-lg border border-zinc-200 bg-white px-2 text-sm sm:h-9 sm:min-w-28">
-        <option value="Arial">Arial</option><option value="Georgia">Georgia</option><option value="Times New Roman">Times</option><option value="Verdana">Verdana</option>
-      </select>
-      <select aria-label="Font size" defaultValue="3" onChange={(event) => command('fontSize', event.target.value)} className="h-10 min-w-0 rounded-lg border border-zinc-200 bg-white px-1 text-xs sm:h-9 sm:w-24 sm:px-2 sm:text-sm">
-        <option value="2">Small</option><option value="3">Normal</option><option value="4">Large</option><option value="5">X-large</option><option value="6">Display</option>
-      </select>
-      {buttons.map(([name, Icon, label]) => <button key={name} type="button" className={toolButton} title={label} aria-label={label} onMouseDown={(event) => event.preventDefault()} onClick={() => command(name)}><Icon size={17} /></button>)}
-      <button type="button" className={toolButton} title="Add link" aria-label="Add link" onMouseDown={(event) => event.preventDefault()} onClick={addLink}><LinkIcon size={17} /></button>
-      <label className="col-span-2 flex h-10 min-w-0 items-center justify-center gap-2 rounded-lg border border-zinc-200 bg-white px-2 text-xs font-medium text-zinc-600 sm:col-auto sm:h-9">Colour<input type="color" aria-label="Text colour" defaultValue="#18181b" onChange={(event) => command('foreColor', event.target.value)} className="h-6 w-7 cursor-pointer border-0 bg-transparent p-0" /></label>
+    <div className="border-b border-zinc-200 bg-zinc-50 p-2 sm:flex sm:flex-wrap sm:gap-1.5" role="toolbar" aria-label="Article formatting tools" onPointerDownCapture={rememberSelection}>
+      <div className="grid grid-cols-2 gap-1.5 sm:contents">
+        <select aria-label="Text style" defaultValue="p" onChange={(event) => command('formatBlock', `<${event.target.value}>`)} className="h-10 min-w-0 rounded-lg border border-zinc-200 bg-white px-2 text-sm sm:h-9 sm:min-w-28">
+          <option value="p">Paragraph</option><option value="h2">Heading 2</option><option value="h3">Heading 3</option><option value="blockquote">Quote</option>
+        </select>
+        <select aria-label="Font family" defaultValue="Arial" onChange={(event) => command('fontName', event.target.value)} className="h-10 min-w-0 rounded-lg border border-zinc-200 bg-white px-2 text-sm sm:h-9 sm:min-w-28">
+          <option value="Arial">Arial</option><option value="Georgia">Georgia</option><option value="Times New Roman">Times</option><option value="Verdana">Verdana</option>
+        </select>
+        <select aria-label="Font size" defaultValue="3" onChange={(event) => command('fontSize', event.target.value)} className="h-10 min-w-0 rounded-lg border border-zinc-200 bg-white px-2 text-sm sm:h-9 sm:w-24">
+          <option value="2">Small</option><option value="3">Normal</option><option value="4">Large</option><option value="5">X-large</option><option value="6">Display</option>
+        </select>
+        <label className="flex h-10 min-w-0 items-center justify-center gap-2 rounded-lg border border-zinc-200 bg-white px-2 text-xs font-medium text-zinc-600 sm:h-9">Colour<input type="color" aria-label="Text colour" defaultValue="#18181b" onChange={(event) => command('foreColor', event.target.value)} className="h-6 w-7 cursor-pointer border-0 bg-transparent p-0" /></label>
+      </div>
+      <div className="mt-1.5 grid grid-cols-6 gap-1.5 sm:contents">
+        {buttons.map(([name, Icon, label]) => <button key={name} type="button" className={toolButton} title={label} aria-label={label} onMouseDown={(event) => event.preventDefault()} onClick={() => command(name)}><Icon size={17} /></button>)}
+        <button type="button" className={toolButton} title="Add link" aria-label="Add link" onMouseDown={(event) => event.preventDefault()} onClick={addLink}><LinkIcon size={17} /></button>
+      </div>
     </div>
     <div ref={editorRef} contentEditable suppressContentEditableWarning role="textbox" aria-multiline="true" aria-label="Article body" onInput={(event) => onChange(event.currentTarget.innerHTML)} onKeyUp={rememberSelection} onPointerUp={rememberSelection} onSelect={rememberSelection} onBlur={rememberSelection} dangerouslySetInnerHTML={{ __html: initialValue }} className="article-content min-h-72 max-w-full overflow-x-auto break-words px-3 py-4 text-base leading-7 outline-none [overflow-wrap:anywhere] sm:min-h-96 sm:px-6" />
     <input type="hidden" name="content" value={value} />
@@ -99,7 +103,7 @@ export default function ArticleComposer({ article = null }) {
       <label className="text-sm font-medium">Or approved cover image URL<input className={field} name="imageUrl" type="url" maxLength="2000" defaultValue={article?.imageUrl || ''} /></label>
       <div className="md:col-span-2"><div className="flex flex-wrap justify-between gap-2 text-sm font-medium"><span>Article body</span><span className="text-xs font-normal text-zinc-500">{content.length}/100000 characters</span></div><RichTextEditor value={content} onChange={setContent} /></div>
     </div>
-    <div className="mt-5 flex flex-wrap gap-6 text-sm"><label className="flex items-center gap-2"><input name="featured" type="checkbox" defaultChecked={Boolean(article?.featured)} /> Feature this article</label><label className="flex items-center gap-2"><input name="publishNow" type="checkbox" /> {editing ? 'Publish after saving' : 'Publish immediately'}</label></div>
+    <div className="mt-5 grid gap-3 text-sm sm:flex sm:flex-wrap sm:gap-6"><label className="flex items-center gap-2"><input name="featured" type="checkbox" defaultChecked={Boolean(article?.featured)} /> Feature this article</label><label className="flex items-center gap-2"><input name="publishNow" type="checkbox" /> {editing ? 'Publish after saving' : 'Publish immediately'}</label></div>
     {state?.error && <p role="alert" className="mt-5 rounded-xl bg-red-50 p-3 text-sm text-red-700">{state.error}</p>}
     {state?.success && <p role="status" className="mt-5 rounded-xl bg-emerald-50 p-3 text-sm text-emerald-700">{state.success}</p>}
     <div className="mt-6 flex flex-col gap-3 sm:flex-row"><button type="button" onClick={() => setPreviewOpen(true)} className="rounded-full border px-7 py-3 font-semibold">Preview</button><button disabled={pending || !content.trim()} className="rounded-full bg-zinc-950 px-7 py-3 font-semibold text-white disabled:opacity-60">{pending ? 'Saving…' : editing ? 'Save changes' : 'Save article'}</button></div>

@@ -31,11 +31,11 @@ export default async function EditDraftPage({ params }) {
     notFound();
   }
 
-  return <main className="min-h-screen bg-[#f7f5ef] px-4 py-8 text-zinc-950 sm:px-6 sm:py-12">
+  return <main className="min-h-screen overflow-x-hidden bg-[#f7f5ef] px-3 py-6 text-zinc-950 sm:px-6 sm:py-12">
     <div className="mx-auto max-w-4xl">
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+      <div className="mb-6 grid gap-4 sm:flex sm:items-center sm:justify-between">
         <div><p className="text-xs font-bold uppercase tracking-[.18em] text-[#8f7d4d]">Draft workspace</p><h1 className="mt-2 text-3xl font-semibold">Edit article</h1></div>
-        <div className="flex flex-wrap gap-3"><Link href={`/admin/articles/${id}/preview`} className="rounded-full border border-[#b5a05e] bg-[#faf7eb] px-4 py-2 text-sm font-semibold text-[#695a2f]">Full preview</Link><Link href="/admin" className="rounded-full bg-zinc-950 px-4 py-2 text-sm font-semibold text-white">Back to articles</Link></div>
+        <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:gap-3"><Link href={`/admin/articles/${id}/preview`} className="rounded-full border border-[#b5a05e] bg-[#faf7eb] px-3 py-2 text-center text-sm font-semibold text-[#695a2f] sm:px-4">Full preview</Link><Link href="/admin" className="rounded-full bg-zinc-950 px-3 py-2 text-center text-sm font-semibold text-white sm:px-4">Back to articles</Link></div>
       </div>
       <ArticleComposer article={article} />
     </div>
