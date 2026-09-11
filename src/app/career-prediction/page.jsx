@@ -10,7 +10,7 @@ export const metadata = {
     type: 'website',
     url: '/career-prediction',
     title: 'Legal Career Path Predictor for Law Students',
-    description: 'Work through 12 realistic legal scenarios and discover career paths suited to your strengths, instincts and working style.',
+    description: 'Make your choice in 12 quick legal stories and discover career paths that may suit you.',
   },
 };
 
@@ -22,7 +22,7 @@ export default function CareerPredictionPage() {
         <div className="mx-auto max-w-3xl">
           <span className="text-xs font-bold uppercase tracking-[0.22em] text-[#8f7d4d] dark:text-[#dfd29a]">Discover your legal path</span>
           <h1 className="mt-5 text-4xl font-semibold leading-tight sm:text-6xl">Where could your law degree take you?</h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">Work through 12 realistic legal scenarios drawn from a bank of more than 100. Your choices reveal how you handle pressure, evidence, people and difficult trade-offs.</p>
+          <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">Step into 12 quick legal stories and choose what you would do. There are no wrong answers—just follow your instinct and discover a career path you may enjoy.</p>
         </div>
       </section>
       <CareerPredictor />
