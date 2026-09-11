@@ -1,29 +1,105 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useEffect, useRef, useState } from 'react';
+import { AlignCenter, AlignJustify, AlignLeft, AlignRight, Bold, Italic, Link as LinkIcon, List, ListOrdered, Redo2, Underline, Undo2 } from 'lucide-react';
 import { createArticle } from '@/app/admin/actions';
+import { updateDraftArticle } from '@/app/admin/articles/actions';
 
 const field = 'mt-2 w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 outline-none focus:border-[#9c874b]';
+const toolButton = 'grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-zinc-200 bg-white text-zinc-700 transition hover:border-[#b5a05e] hover:bg-[#faf7eb] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8f7d4d]';
 
-export default function ArticleComposer() {
-  const [state, action, pending] = useActionState(createArticle, {});
-  return (
-    <form action={action} className="min-w-0 rounded-2xl border bg-white p-4 shadow-sm sm:rounded-3xl sm:p-6" encType="multipart/form-data">
-      <div className="flex items-center justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-widest text-[#8f7d4d]">New article</p><h2 className="mt-2 text-2xl font-semibold">Write and publish</h2></div></div>
-      <div className="mt-6 grid gap-5 md:grid-cols-2">
-        <label className="text-sm font-medium md:col-span-2">Title<input className={field} name="title" required /></label>
-        <label className="text-sm font-medium">Slug (optional)<input className={field} name="slug" placeholder="generated-from-title" /></label>
-        <label className="text-sm font-medium">Category<input className={field} name="category" required placeholder="e.g. Criminal Law" /></label>
-        <label className="text-sm font-medium md:col-span-2">Writer’s name<input className={field} name="author" required placeholder="Enter the actual writer for this article" /></label>
-        <label className="text-sm font-medium md:col-span-2">Summary<textarea className={field} name="excerpt" rows="3" required /></label>
-        <label className="text-sm font-medium">Cover image upload<input className={field} name="image" type="file" accept="image/jpeg,image/png,image/webp" /></label>
-        <label className="text-sm font-medium">Or cover image URL<input className={field} name="imageUrl" type="url" /></label>
-        <label className="text-sm font-medium md:col-span-2">Article body <span className="font-normal text-zinc-500">(plain text or HTML)</span><textarea className={`${field} min-h-80 font-mono text-sm`} name="content" required /></label>
-      </div>
-      <div className="mt-5 flex flex-wrap gap-6 text-sm"><label className="flex items-center gap-2"><input name="featured" type="checkbox" /> Feature this article</label><label className="flex items-center gap-2"><input name="publishNow" type="checkbox" /> Publish immediately</label></div>
-      {state?.error && <p className="mt-5 rounded-xl bg-red-50 p-3 text-sm text-red-700">{state.error}</p>}
-      {state?.success && <p className="mt-5 rounded-xl bg-emerald-50 p-3 text-sm text-emerald-700">{state.success}</p>}
-      <button disabled={pending} className="mt-6 w-full rounded-full bg-zinc-950 px-7 py-3 font-semibold text-white disabled:opacity-60 sm:w-auto">{pending ? 'Saving…' : 'Save article'}</button>
-    </form>
-  );
+function RichTextEditor({ value, onChange }) {
+  const editorRef = useRef(null);
+  const selectionRef = useRef(null);
+  const [initialValue] = useState(value);
+
+  function rememberSelection() {
+    const selection = window.getSelection();
+    if (selection?.rangeCount && editorRef.current?.contains(selection.anchorNode)) selectionRef.current = selection.getRangeAt(0).cloneRange();
+  }
+
+  function command(name, commandValue = null) {
+    editorRef.current?.focus();
+    if (selectionRef.current) {
+      const selection = window.getSelection();
+      selection?.removeAllRanges();
+      selection?.addRange(selectionRef.current);
+    }
+    document.execCommand(name, false, commandValue);
+    onChange(editorRef.current?.innerHTML || '');
+    rememberSelection();
+  }
+
+  function addLink() {
+    const url = window.prompt('Enter the full link address (https://…)');
+    if (!url) return;
+    let parsed;
+    try { parsed = new URL(url); } catch { window.alert('Enter a valid full link address.'); return; }
+    if (!['http:', 'https:', 'mailto:'].includes(parsed.protocol)) { window.alert('Links must use HTTP, HTTPS or mailto.'); return; }
+    command('createLink', parsed.toString());
+  }
+
+  const buttons = [
+    ['bold', Bold, 'Bold'], ['italic', Italic, 'Italic'], ['underline', Underline, 'Underline'],
+    ['justifyLeft', AlignLeft, 'Align left'], ['justifyCenter', AlignCenter, 'Align centre'], ['justifyRight', AlignRight, 'Align right'], ['justifyFull', AlignJustify, 'Justify'],
+    ['insertUnorderedList', List, 'Bulleted list'], ['insertOrderedList', ListOrdered, 'Numbered list'],
+    ['undo', Undo2, 'Undo'], ['redo', Redo2, 'Redo'],
+  ];
+
+  return <div className="mt-2 overflow-hidden rounded-xl border border-zinc-200 bg-white focus-within:border-[#9c874b]">
+    <div className="flex flex-wrap gap-1.5 border-b border-zinc-200 bg-zinc-50 p-2" role="toolbar" aria-label="Article formatting tools">
+      <select aria-label="Text style" defaultValue="p" onMouseDown={rememberSelection} onChange={(event) => command('formatBlock', event.target.value)} className="h-9 min-w-28 rounded-lg border border-zinc-200 bg-white px-2 text-sm">
+        <option value="p">Paragraph</option><option value="h2">Heading 2</option><option value="h3">Heading 3</option><option value="blockquote">Quote</option>
+      </select>
+      <select aria-label="Font family" defaultValue="Arial" onMouseDown={rememberSelection} onChange={(event) => command('fontName', event.target.value)} className="h-9 min-w-28 rounded-lg border border-zinc-200 bg-white px-2 text-sm">
+        <option value="Arial">Arial</option><option value="Georgia">Georgia</option><option value="Times New Roman">Times</option><option value="Verdana">Verdana</option>
+      </select>
+      <select aria-label="Font size" defaultValue="3" onMouseDown={rememberSelection} onChange={(event) => command('fontSize', event.target.value)} className="h-9 w-24 rounded-lg border border-zinc-200 bg-white px-2 text-sm">
+        <option value="2">Small</option><option value="3">Normal</option><option value="4">Large</option><option value="5">X-large</option><option value="6">Display</option>
+      </select>
+      {buttons.map(([name, Icon, label]) => <button key={name} type="button" className={toolButton} title={label} aria-label={label} onMouseDown={(event) => event.preventDefault()} onClick={() => command(name)}><Icon size={17} /></button>)}
+      <button type="button" className={toolButton} title="Add link" aria-label="Add link" onMouseDown={(event) => event.preventDefault()} onClick={addLink}><LinkIcon size={17} /></button>
+      <label className="flex h-9 items-center gap-2 rounded-lg border border-zinc-200 bg-white px-2 text-xs font-medium text-zinc-600">Colour<input type="color" aria-label="Text colour" defaultValue="#18181b" onMouseDown={rememberSelection} onChange={(event) => command('foreColor', event.target.value)} className="h-6 w-7 cursor-pointer border-0 bg-transparent p-0" /></label>
+    </div>
+    <div ref={editorRef} contentEditable suppressContentEditableWarning role="textbox" aria-multiline="true" aria-label="Article body" onInput={(event) => onChange(event.currentTarget.innerHTML)} onKeyUp={rememberSelection} onMouseUp={rememberSelection} onBlur={rememberSelection} dangerouslySetInnerHTML={{ __html: initialValue }} className="article-content min-h-80 px-4 py-4 text-base leading-7 outline-none sm:min-h-96 sm:px-6" />
+    <input type="hidden" name="content" value={value} />
+  </div>;
+}
+
+export default function ArticleComposer({ article = null }) {
+  const editing = Boolean(article);
+  const [state, action, pending] = useActionState(editing ? updateDraftArticle : createArticle, {});
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [title, setTitle] = useState(article?.title || '');
+  const [excerpt, setExcerpt] = useState(article?.excerpt || '');
+  const [content, setContent] = useState(article?.content || '');
+  const closeButtonRef = useRef(null);
+
+  useEffect(() => {
+    if (!previewOpen) return undefined;
+    closeButtonRef.current?.focus();
+    const closeOnEscape = (event) => { if (event.key === 'Escape') setPreviewOpen(false); };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
+  }, [previewOpen]);
+
+  return <form action={action} className="min-w-0 rounded-2xl border bg-white p-4 shadow-sm sm:rounded-3xl sm:p-6" encType="multipart/form-data">
+    {editing ? <input type="hidden" name="id" value={article.id} /> : null}
+    <div><p className="text-xs font-bold uppercase tracking-widest text-[#8f7d4d]">{editing ? 'Edit draft' : 'New article'}</p><h2 className="mt-2 text-2xl font-semibold">{editing ? 'Refine your article' : 'Write and publish'}</h2></div>
+    <div className="mt-6 grid gap-5 md:grid-cols-2">
+      <label className="text-sm font-medium md:col-span-2">Title <span className="float-right text-xs font-normal text-zinc-500">{title.length}/255</span><input className={field} name="title" maxLength="255" required value={title} onChange={(event) => setTitle(event.target.value)} /></label>
+      <label className="text-sm font-medium">Slug (optional)<input className={field} name="slug" maxLength="90" placeholder="generated-from-title" defaultValue={article?.slug || ''} /></label>
+      <label className="text-sm font-medium">Category<input className={field} name="category" maxLength="100" required placeholder="e.g. Criminal Law" defaultValue={article?.category || ''} /></label>
+      <label className="text-sm font-medium md:col-span-2">Writer’s name<input className={field} name="author" maxLength="150" required placeholder="Enter the actual writer for this article" defaultValue={article?.author || ''} /></label>
+      <label className="text-sm font-medium md:col-span-2">Summary <span className="float-right text-xs font-normal text-zinc-500">{excerpt.length}/2000</span><textarea className={field} name="excerpt" maxLength="2000" rows="3" required value={excerpt} onChange={(event) => setExcerpt(event.target.value)} /></label>
+      <label className="text-sm font-medium">Cover image upload<input className={field} name="image" type="file" accept="image/jpeg,image/png,image/webp" /><span className="mt-1 block text-xs font-normal text-zinc-500">{editing ? 'Leave empty to keep the current upload.' : 'JPEG, PNG or WebP; maximum 10 MB.'}</span></label>
+      <label className="text-sm font-medium">Or approved cover image URL<input className={field} name="imageUrl" type="url" maxLength="2000" defaultValue={article?.imageUrl || ''} /></label>
+      <div className="md:col-span-2"><div className="flex flex-wrap justify-between gap-2 text-sm font-medium"><span>Article body</span><span className="text-xs font-normal text-zinc-500">{content.length}/100000 characters</span></div><RichTextEditor value={content} onChange={setContent} /></div>
+    </div>
+    <div className="mt-5 flex flex-wrap gap-6 text-sm"><label className="flex items-center gap-2"><input name="featured" type="checkbox" defaultChecked={Boolean(article?.featured)} /> Feature this article</label><label className="flex items-center gap-2"><input name="publishNow" type="checkbox" /> {editing ? 'Publish after saving' : 'Publish immediately'}</label></div>
+    {state?.error && <p role="alert" className="mt-5 rounded-xl bg-red-50 p-3 text-sm text-red-700">{state.error}</p>}
+    {state?.success && <p role="status" className="mt-5 rounded-xl bg-emerald-50 p-3 text-sm text-emerald-700">{state.success}</p>}
+    <div className="mt-6 flex flex-col gap-3 sm:flex-row"><button type="button" onClick={() => setPreviewOpen(true)} className="rounded-full border px-7 py-3 font-semibold">Preview</button><button disabled={pending || !content.trim()} className="rounded-full bg-zinc-950 px-7 py-3 font-semibold text-white disabled:opacity-60">{pending ? 'Saving…' : editing ? 'Save changes' : 'Save article'}</button></div>
+    {previewOpen ? <div role="dialog" aria-modal="true" aria-labelledby="article-preview-title" className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3 sm:p-6"><div className="max-h-[90vh] w-full max-w-4xl overflow-auto rounded-2xl bg-white p-5 shadow-2xl sm:rounded-3xl sm:p-8"><div className="flex items-center justify-between gap-4"><h2 id="article-preview-title" className="text-2xl font-semibold">{title || 'Untitled article'}</h2><button ref={closeButtonRef} type="button" onClick={() => setPreviewOpen(false)} className="rounded-full border px-4 py-2 text-sm">Close</button></div><p className="mt-4 text-zinc-600">{excerpt || 'No summary yet.'}</p><div className="article-content mt-8 border-t pt-7" dangerouslySetInnerHTML={{ __html: content || '<p>No article content yet.</p>' }} /></div></div> : null}
+  </form>;
 }

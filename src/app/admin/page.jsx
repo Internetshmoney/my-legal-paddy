@@ -46,6 +46,9 @@ export default async function AdminPage() {
               <Link href={`/admin/articles/${article.id}/preview`} className="rounded-full border border-[#b5a05e] bg-[#faf7eb] px-3 py-1.5 text-xs font-semibold text-[#695a2f]">
                 Preview full article
               </Link>
+              {article.status === 'draft' ? <Link href={`/admin/articles/${article.id}/edit`} className="rounded-full border border-zinc-300 px-3 py-1.5 text-xs font-semibold text-zinc-700">
+                Edit draft
+              </Link> : null}
               <form action={setArticleStatus}>
                 <input type="hidden" name="id" value={article.id}/>
                 <input type="hidden" name="status" value={article.status === 'published' ? 'draft' : 'published'}/>
