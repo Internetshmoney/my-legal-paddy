@@ -9,13 +9,49 @@ import { selectCareerQuestions } from '@/data/careerQuestionBank';
 const quizUrl = 'https://mylegalpaddy.app/career-prediction';
 
 const paths = {
-  advocacy: { title: 'Litigation & Advocacy', icon: Gavel, summary: 'You are energized by argument, evidence and persuading people under pressure.', strengths: ['Oral advocacy', 'Fast analysis', 'Strategic thinking'], next: ['Join your moot and mock society', 'Observe court proceedings', 'Practise written and oral submissions'] },
-  corporate: { title: 'Corporate & Commercial Law', icon: BriefcaseBusiness, summary: 'You enjoy structure, negotiation and helping organizations make sound decisions.', strengths: ['Commercial awareness', 'Negotiation', 'Attention to detail'], next: ['Study contracts and company law deeply', 'Follow business and finance news', 'Seek an internship with a commercial team'] },
-  rights: { title: 'Human Rights & Public Interest', icon: HeartHandshake, summary: 'You are motivated by fairness, social impact and using law to protect people.', strengths: ['Empathy', 'Community focus', 'Purpose-driven research'], next: ['Volunteer with a legal-aid organization', 'Study constitutional and human-rights cases', 'Learn community advocacy and policy writing'] },
-  technology: { title: 'Technology & Intellectual Property Law', icon: Sparkles, summary: 'You are curious about innovation and the legal questions created by new ideas.', strengths: ['Curiosity', 'Adaptability', 'Future-focused reasoning'], next: ['Explore privacy, AI and copyright law', 'Learn how digital products work', 'Write about emerging technology regulation'] },
-  research: { title: 'Legal Research, Academia & Policy', icon: BookOpen, summary: 'You prefer deep thinking, careful writing and improving the rules behind institutions.', strengths: ['Research', 'Clear writing', 'Systems thinking'], next: ['Work on a journal or research project', 'Build strong citation and writing habits', 'Explore postgraduate study and policy internships'] },
-  public: { title: 'Public Service & Criminal Justice', icon: Landmark, summary: 'You value public responsibility, order and institutions that make justice work.', strengths: ['Public-minded judgment', 'Evidence evaluation', 'Institutional thinking'], next: ['Study criminal procedure and evidence', 'Explore government and justice-sector internships', 'Attend public policy and justice events'] },
+  advocacy: { title: 'Litigation & Advocacy', icon: Gavel, art: { style: '3d', index: 0 }, summary: 'You are energized by argument, evidence and persuading people under pressure.', strengths: ['Oral advocacy', 'Fast analysis', 'Strategic thinking'], next: ['Join your moot and mock society', 'Observe court proceedings', 'Practise written and oral submissions'] },
+  corporate: { title: 'Corporate & Commercial Law', icon: BriefcaseBusiness, art: { style: 'anime', index: 0 }, summary: 'You enjoy structure, negotiation and helping organizations make sound decisions.', strengths: ['Commercial awareness', 'Negotiation', 'Attention to detail'], next: ['Study contracts and company law deeply', 'Follow business and finance news', 'Seek an internship with a commercial team'] },
+  rights: { title: 'Human Rights & Public Interest', icon: HeartHandshake, art: { style: '3d', index: 2 }, summary: 'You are motivated by fairness, social impact and using law to protect people.', strengths: ['Empathy', 'Community focus', 'Purpose-driven research'], next: ['Volunteer with a legal-aid organization', 'Study constitutional and human-rights cases', 'Learn community advocacy and policy writing'] },
+  technology: { title: 'Technology & Intellectual Property Law', icon: Sparkles, art: { style: 'anime', index: 1 }, summary: 'You are curious about innovation and the legal questions created by new ideas.', strengths: ['Curiosity', 'Adaptability', 'Future-focused reasoning'], next: ['Explore privacy, AI and copyright law', 'Learn how digital products work', 'Write about emerging technology regulation'] },
+  research: { title: 'Legal Research, Academia & Policy', icon: BookOpen, art: { style: '3d', index: 4 }, summary: 'You prefer deep thinking, careful writing and improving the rules behind institutions.', strengths: ['Research', 'Clear writing', 'Systems thinking'], next: ['Work on a journal or research project', 'Build strong citation and writing habits', 'Explore postgraduate study and policy internships'] },
+  public: { title: 'Public Service & Criminal Justice', icon: Landmark, art: { style: 'anime', index: 2 }, summary: 'You value public responsibility, order and institutions that make justice work.', strengths: ['Public-minded judgment', 'Evidence evaluation', 'Institutional thinking'], next: ['Study criminal procedure and evidence', 'Explore government and justice-sector internships', 'Attend public policy and justice events'] },
 };
+
+function resultArtCss(art) {
+  const columns = 3;
+  const rows = art.style === '3d' ? 2 : 1;
+  const column = art.index % columns;
+  const row = Math.floor(art.index / columns);
+  return {
+    backgroundImage: `url(/career/results/career-results-${art.style}.webp)`,
+    backgroundPosition: `${column * 50}% ${rows === 1 ? 0 : row * 100}%`,
+    backgroundSize: `${columns * 100}% ${rows * 100}%`,
+  };
+}
+
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const image = new window.Image();
+    image.onload = () => resolve(image);
+    image.onerror = reject;
+    image.src = src;
+  });
+}
+
+async function drawResultArt(context, result) {
+  const image = await loadImage(`/career/results/career-results-${result.art.style}.webp`);
+  const columns = 3;
+  const rows = result.art.style === '3d' ? 2 : 1;
+  const sourceWidth = image.naturalWidth / columns;
+  const sourceHeight = image.naturalHeight / rows;
+  const sourceX = (result.art.index % columns) * sourceWidth;
+  const sourceY = Math.floor(result.art.index / columns) * sourceHeight;
+  context.save();
+  roundedRect(context, 640, 65, 370, 370, 34);
+  context.clip();
+  context.drawImage(image, sourceX, sourceY, sourceWidth, sourceHeight, 640, 65, 370, 370);
+  context.restore();
+}
 
 function roundedRect(context, x, y, width, height, radius) {
   const safeRadius = Math.min(radius, width / 2, height / 2);
@@ -127,7 +163,7 @@ async function createResultImage(result) {
   context.arc(50, 1295, 260, 0, Math.PI * 2);
   context.fill();
 
-  drawScales(context, 930, 180, 0.72);
+  await drawResultArt(context, result);
   drawGavel(context, 130, 1135, -0.55);
   drawSparkle(context, 125, 225, 35, '#b79b43');
   drawSparkle(context, 930, 1060, 28, '#121212');
@@ -143,20 +179,20 @@ async function createResultImage(result) {
 
   context.fillStyle = '#786633';
   context.font = '700 25px Arial, sans-serif';
-  context.fillText('MY LEGAL CAREER MATCH', 80, 330);
+  context.fillText('MY LEGAL CAREER MATCH', 80, 220);
 
   context.fillStyle = '#121212';
-  context.font = '700 76px Arial, sans-serif';
-  const titleLines = wrapText(context, result.title, 900);
-  titleLines.forEach((line, index) => context.fillText(line, 80, 430 + index * 84));
+  context.font = '700 58px Arial, sans-serif';
+  const titleLines = wrapText(context, result.title, 500);
+  titleLines.forEach((line, index) => context.fillText(line, 80, 292 + index * 66));
 
-  const summaryY = 480 + titleLines.length * 84;
+  const summaryY = Math.max(500, 322 + titleLines.length * 66);
   context.fillStyle = '#4b4b43';
   context.font = '400 32px Arial, sans-serif';
   const summaryLines = wrapText(context, result.summary, 900);
-  summaryLines.slice(0, 4).forEach((line, index) => context.fillText(line, 80, summaryY + index * 46));
+  summaryLines.slice(0, 3).forEach((line, index) => context.fillText(line, 80, summaryY + index * 46));
 
-  const strengthsY = summaryY + summaryLines.slice(0, 4).length * 46 + 70;
+  const strengthsY = summaryY + summaryLines.slice(0, 3).length * 46 + 58;
   context.fillStyle = '#121212';
   context.font = '700 24px Arial, sans-serif';
   context.fillText('THIS PATH REWARDS', 80, strengthsY);
@@ -299,7 +335,10 @@ export default function CareerPredictor() {
     const result = paths[resultKey];
     const Icon = result.icon;
     return <section className="px-4 py-16 sm:px-6 sm:py-24"><div className="mx-auto max-w-5xl overflow-hidden rounded-[2rem] border border-black/10 bg-white shadow-[0_35px_100px_-55px_rgba(0,0,0,.4)] dark:border-white/10 dark:bg-zinc-900">
-      <div className="bg-zinc-950 p-8 text-center text-white sm:p-12"><span className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#C9B974] text-black"><Icon size={31} /></span><p className="mt-6 text-xs font-bold uppercase tracking-[.22em] text-[#dfd29a]">Your strongest match</p><h2 className="mt-3 text-4xl font-semibold sm:text-5xl">{result.title}</h2><p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-zinc-300">{result.summary}</p></div>
+      <div className="grid items-center gap-8 bg-zinc-950 p-6 text-white sm:p-10 md:grid-cols-[1fr_.78fr] md:p-12">
+        <div className="text-center md:text-left"><span className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#C9B974] text-black md:mx-0"><Icon size={31} /></span><p className="mt-6 text-xs font-bold uppercase tracking-[.22em] text-[#dfd29a]">Your strongest match</p><h2 className="mt-3 text-4xl font-semibold sm:text-5xl">{result.title}</h2><p className="mt-5 max-w-2xl text-lg leading-8 text-zinc-300">{result.summary}</p></div>
+        <div role="img" aria-label={`${result.title} career illustration`} className="aspect-square w-full overflow-hidden rounded-[2rem] border border-white/15 bg-cover bg-no-repeat shadow-2xl motion-safe:animate-[pulse_4s_ease-in-out_infinite]" style={resultArtCss(result)} />
+      </div>
       <div className="grid gap-10 p-8 sm:p-12 md:grid-cols-2"><div><h3 className="text-xl font-semibold">Strengths this path rewards</h3><ul className="mt-5 space-y-3">{result.strengths.map((item) => <li key={item} className="flex gap-3"><Check className="mt-0.5 shrink-0 text-[#8f7d4d]" size={19} />{item}</li>)}</ul></div><div><h3 className="text-xl font-semibold">What to do next</h3><ol className="mt-5 space-y-3">{result.next.map((item, index) => <li key={item} className="flex gap-3"><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#f3e8bd] text-xs font-bold text-[#75643d]">{index + 1}</span>{item}</li>)}</ol></div></div>
       <div className="border-t border-black/10 bg-[#f8f7f3] p-6 dark:border-white/10 dark:bg-black/30 sm:p-10">
         <div className="grid items-center gap-8 md:grid-cols-[.78fr_1.22fr]">
