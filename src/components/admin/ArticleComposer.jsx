@@ -76,7 +76,7 @@ function RichTextEditor({ initialValue, onChange, countRef }) {
       </div>
     </div>
     <div ref={editorRef} contentEditable suppressContentEditableWarning role="textbox" aria-multiline="true" aria-label="Article body" onInput={syncContent} onKeyUp={rememberSelection} onPointerUp={rememberSelection} onSelect={rememberSelection} onBlur={rememberSelection} dangerouslySetInnerHTML={{ __html: initialValue }} className="article-content min-h-72 max-w-full overflow-x-auto break-words px-3 py-4 text-base leading-7 outline-none [overflow-wrap:anywhere] sm:min-h-96 sm:px-6" />
-    <input ref={inputRef} type="hidden" name="content" defaultValue={initialValue} />
+    <textarea ref={inputRef} name="content" defaultValue={initialValue} hidden readOnly />
   </div>;
 }
 
