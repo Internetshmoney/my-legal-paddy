@@ -84,7 +84,7 @@ export async function createArticle(previousState, formData) {
       documentId: ID.unique(),
       data: articleData,
     });
-    revalidatePath('/'); revalidatePath('/articles');
+    revalidatePath('/'); revalidatePath('/articles'); revalidatePath('/admin');
     return { success: 'Article saved successfully.' };
   } catch (error) { return { error: error.message }; }
 }
