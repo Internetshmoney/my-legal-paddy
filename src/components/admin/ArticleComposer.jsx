@@ -8,10 +8,17 @@ import { updateDraftArticle } from '@/app/admin/articles/actions';
 const field = 'mt-2 min-w-0 w-full rounded-xl border border-zinc-200 bg-white px-3 py-3 text-sm outline-none focus:border-[#9c874b] sm:px-4 sm:text-base';
 const toolButton = 'grid h-10 w-full place-items-center rounded-lg border border-zinc-200 bg-white text-zinc-700 transition hover:border-[#b5a05e] hover:bg-[#faf7eb] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8f7d4d] sm:h-9 sm:w-9 sm:shrink-0';
 
-function RichTextEditor({ value, onChange }) {
+function RichTextEditor({ initialValue, onChange, countRef }) {
   const editorRef = useRef(null);
+  const inputRef = useRef(null);
   const selectionRef = useRef(null);
-  const [initialValue] = useState(value);
+
+  function syncContent() {
+    const html = editorRef.current?.innerHTML || '';
+    if (inputRef.current) inputRef.current.value = html;
+    if (countRef?.current) countRef.current.textContent = String(html.length);
+    onChange(html);
+  }
 
   function rememberSelection() {
     const selection = window.getSelection();
@@ -29,7 +36,7 @@ function RichTextEditor({ value, onChange }) {
     editor.focus({ preventScroll: true });
     document.execCommand('styleWithCSS', false, true);
     document.execCommand(name, false, commandValue);
-    onChange(editor.innerHTML);
+    syncContent();
     rememberSelection();
   }
 
@@ -68,8 +75,8 @@ function RichTextEditor({ value, onChange }) {
         <button type="button" className={toolButton} title="Add link" aria-label="Add link" onMouseDown={(event) => event.preventDefault()} onClick={addLink}><LinkIcon size={17} /></button>
       </div>
     </div>
-    <div ref={editorRef} contentEditable suppressContentEditableWarning role="textbox" aria-multiline="true" aria-label="Article body" onInput={(event) => onChange(event.currentTarget.innerHTML)} onKeyUp={rememberSelection} onPointerUp={rememberSelection} onSelect={rememberSelection} onBlur={rememberSelection} dangerouslySetInnerHTML={{ __html: initialValue }} className="article-content min-h-72 max-w-full overflow-x-auto break-words px-3 py-4 text-base leading-7 outline-none [overflow-wrap:anywhere] sm:min-h-96 sm:px-6" />
-    <input type="hidden" name="content" value={value} />
+    <div ref={editorRef} contentEditable suppressContentEditableWarning role="textbox" aria-multiline="true" aria-label="Article body" onInput={syncContent} onKeyUp={rememberSelection} onPointerUp={rememberSelection} onSelect={rememberSelection} onBlur={rememberSelection} dangerouslySetInnerHTML={{ __html: initialValue }} className="article-content min-h-72 max-w-full overflow-x-auto break-words px-3 py-4 text-base leading-7 outline-none [overflow-wrap:anywhere] sm:min-h-96 sm:px-6" />
+    <textarea ref={inputRef} name="content" defaultValue={initialValue} hidden readOnly />
   </div>;
 }
 
@@ -79,7 +86,10 @@ export default function ArticleComposer({ article = null }) {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [title, setTitle] = useState(article?.title || '');
   const [excerpt, setExcerpt] = useState(article?.excerpt || '');
-  const [content, setContent] = useState(article?.content || '');
+  const initialContent = article?.content || '';
+  const contentRef = useRef(initialContent);
+  const contentCountRef = useRef(null);
+  const [previewContent, setPreviewContent] = useState(initialContent);
   const closeButtonRef = useRef(null);
 
   useEffect(() => {
@@ -101,12 +111,12 @@ export default function ArticleComposer({ article = null }) {
       <label className="text-sm font-medium md:col-span-2">Summary <span className="float-right text-xs font-normal text-zinc-500">{excerpt.length}/2000</span><textarea className={field} name="excerpt" maxLength="2000" rows="3" required value={excerpt} onChange={(event) => setExcerpt(event.target.value)} /></label>
       <label className="text-sm font-medium">Cover image upload<input className={`${field} file:mr-2 file:max-w-[52%] file:truncate`} name="image" type="file" accept="image/jpeg,image/png,image/webp" /><span className="mt-1 block text-xs font-normal text-zinc-500">{editing ? 'Leave empty to keep the current upload.' : 'JPEG, PNG or WebP; maximum 10 MB.'}</span></label>
       <label className="text-sm font-medium">Or approved cover image URL<input className={field} name="imageUrl" type="url" maxLength="2000" defaultValue={article?.imageUrl || ''} /></label>
-      <div className="md:col-span-2"><div className="flex flex-wrap justify-between gap-2 text-sm font-medium"><span>Article body</span><span className="text-xs font-normal text-zinc-500">{content.length}/100000 characters</span></div><RichTextEditor value={content} onChange={setContent} /></div>
+      <div className="md:col-span-2"><div className="flex flex-wrap justify-between gap-2 text-sm font-medium"><span>Article body</span><span className="text-xs font-normal text-zinc-500"><span ref={contentCountRef}>{initialContent.length}</span>/100000 characters</span></div><RichTextEditor initialValue={initialContent} countRef={contentCountRef} onChange={(html) => { contentRef.current = html; }} /></div>
     </div>
     <div className="mt-5 grid gap-3 text-sm sm:flex sm:flex-wrap sm:gap-6"><label className="flex items-center gap-2"><input name="featured" type="checkbox" defaultChecked={Boolean(article?.featured)} /> Feature this article</label><label className="flex items-center gap-2"><input name="publishNow" type="checkbox" /> {editing ? 'Publish after saving' : 'Publish immediately'}</label></div>
     {state?.error && <p role="alert" className="mt-5 rounded-xl bg-red-50 p-3 text-sm text-red-700">{state.error}</p>}
     {state?.success && <p role="status" className="mt-5 rounded-xl bg-emerald-50 p-3 text-sm text-emerald-700">{state.success}</p>}
-    <div className="mt-6 flex flex-col gap-3 sm:flex-row"><button type="button" onClick={() => setPreviewOpen(true)} className="rounded-full border px-7 py-3 font-semibold">Preview</button><button disabled={pending || !content.trim()} className="rounded-full bg-zinc-950 px-7 py-3 font-semibold text-white disabled:opacity-60">{pending ? 'Saving…' : editing ? 'Save changes' : 'Save article'}</button></div>
-    {previewOpen ? <div role="dialog" aria-modal="true" aria-labelledby="article-preview-title" className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3 sm:p-6"><div className="max-h-[90vh] w-full max-w-4xl overflow-auto rounded-2xl bg-white p-5 shadow-2xl sm:rounded-3xl sm:p-8"><div className="flex items-center justify-between gap-4"><h2 id="article-preview-title" className="text-2xl font-semibold">{title || 'Untitled article'}</h2><button ref={closeButtonRef} type="button" onClick={() => setPreviewOpen(false)} className="rounded-full border px-4 py-2 text-sm">Close</button></div><p className="mt-4 text-zinc-600">{excerpt || 'No summary yet.'}</p><div className="article-content mt-8 border-t pt-7" dangerouslySetInnerHTML={{ __html: content || '<p>No article content yet.</p>' }} /></div></div> : null}
+    <div className="mt-6 flex flex-col gap-3 sm:flex-row"><button type="button" onClick={() => { setPreviewContent(contentRef.current); setPreviewOpen(true); }} className="rounded-full border px-7 py-3 font-semibold">Preview</button><button disabled={pending} className="rounded-full bg-zinc-950 px-7 py-3 font-semibold text-white disabled:opacity-60">{pending ? 'Saving…' : editing ? 'Save changes' : 'Save article'}</button></div>
+    {previewOpen ? <div role="dialog" aria-modal="true" aria-labelledby="article-preview-title" className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3 sm:p-6"><div className="max-h-[90vh] w-full max-w-4xl overflow-auto rounded-2xl bg-white p-5 shadow-2xl sm:rounded-3xl sm:p-8"><div className="flex items-center justify-between gap-4"><h2 id="article-preview-title" className="text-2xl font-semibold">{title || 'Untitled article'}</h2><button ref={closeButtonRef} type="button" onClick={() => setPreviewOpen(false)} className="rounded-full border px-4 py-2 text-sm">Close</button></div><p className="mt-4 text-zinc-600">{excerpt || 'No summary yet.'}</p><div className="article-content mt-8 border-t pt-7" dangerouslySetInnerHTML={{ __html: previewContent || '<p>No article content yet.</p>' }} /></div></div> : null}
   </form>;
 }
