@@ -51,8 +51,11 @@ export default async function AdminPage() {
               </Link> : null}
               <form action={setArticleStatus}>
                 <input type="hidden" name="id" value={article.id}/>
+                <input type="hidden" name="currentStatus" value={article.status}/>
                 <input type="hidden" name="status" value={article.status === 'published' ? 'draft' : 'published'}/>
-                <ActionButton>{article.status === 'published' ? 'Move to draft' : 'Publish'}</ActionButton>
+                {article.status === 'published'
+                  ? <ConfirmActionButton confirmationText="UNPUBLISH" message={`Unpublish “${article.title}”? Its public link will immediately stop working.`}>Unpublish</ConfirmActionButton>
+                  : <ActionButton>Publish</ActionButton>}
               </form>
               <form action={deleteArticle}>
                 <input type="hidden" name="id" value={article.id}/>

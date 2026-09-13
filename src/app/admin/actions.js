@@ -93,7 +93,16 @@ export async function setArticleStatus(formData) {
   await requireArticleAccess();
   const id = String(formData.get('id'));
   const status = String(formData.get('status'));
+  const currentStatus = String(formData.get('currentStatus'));
+  if (!['draft', 'published'].includes(status) || !['draft', 'published'].includes(currentStatus) || status === currentStatus) {
+    throw new Error('Invalid article status change. Refresh the dashboard and try again.');
+  }
   const { databases } = getAdminServices();
+  const article = await databases.getDocument({ databaseId: appwriteConfig.databaseId, collectionId: appwriteConfig.articlesCollectionId, documentId: id });
+  if (article.status !== currentStatus) {
+    revalidatePath('/admin');
+    throw new Error('This article changed after the page loaded. Refresh the dashboard before changing its status.');
+  }
   await databases.updateDocument({ databaseId: appwriteConfig.databaseId, collectionId: appwriteConfig.articlesCollectionId, documentId: id, data: { status, ...(status === 'published' ? { publishedAt: new Date().toISOString() } : {}) } });
   revalidatePath('/'); revalidatePath('/articles'); revalidatePath('/admin');
 }
