@@ -44,12 +44,15 @@ function RichTextEditor({ initialValue, onChange, countRef, storageKey, onRecove
   useEffect(() => {
     let saved = '';
     try { saved = window.localStorage.getItem(storageKey) || ''; } catch {}
-    if (!saved || saved === initialValue || !editorRef.current) return;
-    editorRef.current.innerHTML = saved;
-    if (inputRef.current) inputRef.current.value = saved;
-    if (countRef?.current) countRef.current.textContent = String(saved.length);
-    onChange(saved);
-    onRecovered();
+    if (!editorRef.current) return;
+    const content = saved || initialValue;
+    editorRef.current.innerHTML = content;
+    if (inputRef.current) inputRef.current.value = content;
+    if (countRef?.current) countRef.current.textContent = String(content.length);
+    if (saved && saved !== initialValue) {
+      onChange(saved);
+      onRecovered();
+    }
   }, [countRef, initialValue, onChange, onRecovered, storageKey]);
 
   function rememberSelection() {
@@ -107,8 +110,8 @@ function RichTextEditor({ initialValue, onChange, countRef, storageKey, onRecove
         <button type="button" className={toolButton} title="Add link" aria-label="Add link" onMouseDown={(event) => event.preventDefault()} onClick={addLink}><LinkIcon size={17} /></button>
       </div>
     </div>
-    <div ref={editorRef} contentEditable suppressContentEditableWarning role="textbox" aria-multiline="true" aria-label="Article body" onInput={syncContent} onKeyUp={rememberSelection} onPointerUp={rememberSelection} onSelect={rememberSelection} onBlur={rememberSelection} dangerouslySetInnerHTML={{ __html: initialValue }} className="article-content min-h-72 max-w-full overflow-x-auto break-words px-3 py-4 text-base leading-7 outline-none [overflow-wrap:anywhere] sm:min-h-96 sm:px-6" />
-    <input ref={inputRef} type="hidden" name="content" defaultValue={initialValue} />
+    <div ref={editorRef} contentEditable suppressContentEditableWarning role="textbox" aria-multiline="true" aria-label="Article body" onInput={syncContent} onKeyUp={rememberSelection} onPointerUp={rememberSelection} onSelect={rememberSelection} onBlur={rememberSelection} className="article-content min-h-72 max-w-full overflow-x-auto break-words px-3 py-4 text-base leading-7 outline-none [overflow-wrap:anywhere] sm:min-h-96 sm:px-6" />
+    <input ref={inputRef} type="hidden" name="content" />
   </div>;
 }
 
