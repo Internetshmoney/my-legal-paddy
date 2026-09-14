@@ -22,6 +22,15 @@ function absoluteUrl(value) {
   }
 }
 
+function shareImageVersion(article) {
+  const value = `${article.image || ''}|${article.title || ''}|${article.updatedAt || article.publishedAt || ''}`;
+  let hash = 0;
+  for (let index = 0; index < value.length; index += 1) {
+    hash = Math.imul(31, hash) + value.charCodeAt(index) | 0;
+  }
+  return Math.abs(hash).toString(36);
+}
+
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const article = await getPublicArticleBySlug(slug);
@@ -35,7 +44,7 @@ export async function generateMetadata({ params }) {
   }
 
   const description = cleanDescription(article.excerpt);
-  const image = absoluteUrl(article.image);
+  const shareImage = `${siteUrl}/articles/${encodeURIComponent(article.slug)}/opengraph-image?v=${shareImageVersion(article)}`;
 
   return {
     title: article.title,
@@ -51,13 +60,13 @@ export async function generateMetadata({ params }) {
       publishedTime: article.publishedAt,
       authors: [article.author],
       section: article.category,
-      images: [{ url: image, alt: article.title }],
+      images: [{ url: shareImage, width: 1200, height: 630, alt: article.title, type: 'image/png' }],
     },
     twitter: {
       card: 'summary_large_image',
       title: article.title,
       description,
-      images: [image],
+      images: [shareImage],
     },
   };
 }
