@@ -8,6 +8,8 @@ import { InputFile } from 'node-appwrite/file';
 import { appwriteConfig, appwriteConfigured, getDashboardRole, sessionCookieName } from '@/lib/appwrite/config';
 import { createAdminClient, createSessionClient, getAdminServices, getCurrentAdmin } from '@/lib/appwrite/server';
 
+const maximumSubmittedImageSize = 700 * 1024;
+
 function slugify(value) {
   return value.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 90);
 }
@@ -61,6 +63,7 @@ export async function createArticle(previousState, formData) {
     let imageFileId = '';
     const image = formData.get('image');
     if (image instanceof File && image.size > 0) {
+      if (image.size > maximumSubmittedImageSize) return { error: 'The cover image is too large. Choose it again so the dashboard can optimise it before saving.' };
       const uploaded = await storage.createFile({ bucketId: appwriteConfig.articleImagesBucketId, fileId: ID.unique(), file: InputFile.fromBuffer(Buffer.from(await image.arrayBuffer()), image.name) });
       imageFileId = uploaded.$id;
     }

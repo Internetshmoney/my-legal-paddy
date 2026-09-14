@@ -1,13 +1,14 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 import { ID, Query } from 'node-appwrite';
 import { InputFile } from 'node-appwrite/file';
 import { appwriteConfig } from '@/lib/appwrite/config';
 import { getAdminServices, getCurrentAdmin } from '@/lib/appwrite/server';
 
 const imageTypes = new Set(['image/jpeg', 'image/png', 'image/webp']);
-const maximumImageSize = 10 * 1024 * 1024;
+const maximumImageSize = 700 * 1024;
 
 function text(formData, name, maximum, label, required = true) {
   const value = String(formData.get(name) || '').trim();
@@ -30,6 +31,7 @@ function checkedImageUrl(value) {
 
 export async function updateDraftArticle(previousState, formData) {
   let replacementFileId = '';
+  let destination = '';
   try {
     const admin = await getCurrentAdmin();
     if (!admin) throw new Error('You are not authorized to edit articles.');
@@ -48,7 +50,7 @@ export async function updateDraftArticle(previousState, formData) {
 
     const image = formData.get('image');
     if (image instanceof File && image.size > 0) {
-      if (image.size > maximumImageSize) return { error: 'Cover image must be 10 MB or smaller.' };
+      if (image.size > maximumImageSize) return { error: 'The cover image is too large. Choose it again so the dashboard can optimise it before saving.' };
       if (!imageTypes.has(image.type)) return { error: 'Cover image must be a JPEG, PNG, or WebP file.' };
       const uploaded = await storage.createFile({ bucketId: appwriteConfig.articleImagesBucketId, fileId: ID.unique(), file: InputFile.fromBuffer(Buffer.from(await image.arrayBuffer()), image.name) });
       replacementFileId = uploaded.$id;
@@ -77,7 +79,7 @@ export async function updateDraftArticle(previousState, formData) {
     revalidatePath('/admin');
     revalidatePath(`/admin/articles/${id}/edit`);
     revalidatePath(`/admin/articles/${id}/preview`);
-    return { success: publishNow ? 'Article updated and published.' : 'Draft changes saved.' };
+    destination = publishNow ? `/articles/${slug}` : `/admin/articles/${id}/preview`;
   } catch (error) {
     if (replacementFileId) {
       await getAdminServices().storage.deleteFile({ bucketId: appwriteConfig.articleImagesBucketId, fileId: replacementFileId }).catch(() => {});
@@ -85,4 +87,5 @@ export async function updateDraftArticle(previousState, formData) {
     console.error('[Admin] Could not update draft article:', error.message);
     return { error: /required|too long|valid web address|HTTP or HTTPS/.test(error.message) ? error.message : 'The draft could not be updated. Please try again.' };
   }
+  redirect(destination);
 }

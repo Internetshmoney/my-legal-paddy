@@ -1,14 +1,34 @@
 'use client';
 
-import { useActionState, useEffect, useRef, useState } from 'react';
+import { useActionState, useCallback, useEffect, useRef, useState } from 'react';
 import { AlignCenter, AlignJustify, AlignLeft, AlignRight, Bold, Italic, Link as LinkIcon, List, ListOrdered, Redo2, Underline, Undo2 } from 'lucide-react';
 import { createArticle } from '@/app/admin/actions';
 import { updateDraftArticle } from '@/app/admin/articles/actions';
 
 const field = 'mt-2 min-w-0 w-full rounded-xl border border-zinc-200 bg-white px-3 py-3 text-sm outline-none focus:border-[#9c874b] sm:px-4 sm:text-base';
 const toolButton = 'grid h-10 w-full place-items-center rounded-lg border border-zinc-200 bg-white text-zinc-700 transition hover:border-[#b5a05e] hover:bg-[#faf7eb] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8f7d4d] sm:h-9 sm:w-9 sm:shrink-0';
+const maximumSubmittedImageSize = 700 * 1024;
 
-function RichTextEditor({ initialValue, onChange, countRef }) {
+function canvasBlob(canvas, quality) {
+  return new Promise((resolve) => canvas.toBlob(resolve, 'image/webp', quality));
+}
+
+async function optimizeCoverImage(file) {
+  if (file.size <= maximumSubmittedImageSize) return file;
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(1, 1400 / Math.max(bitmap.width, bitmap.height));
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+  canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+  canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close();
+  let blob = await canvasBlob(canvas, 0.78);
+  if (blob?.size > maximumSubmittedImageSize) blob = await canvasBlob(canvas, 0.58);
+  if (!blob || blob.size > maximumSubmittedImageSize) throw new Error('This image is still too large after compression. Choose a smaller image.');
+  return new File([blob], `${file.name.replace(/\.[^.]+$/, '') || 'article-cover'}.webp`, { type: 'image/webp' });
+}
+
+function RichTextEditor({ initialValue, onChange, countRef, storageKey, onRecovered }) {
   const editorRef = useRef(null);
   const inputRef = useRef(null);
   const selectionRef = useRef(null);
@@ -17,8 +37,20 @@ function RichTextEditor({ initialValue, onChange, countRef }) {
     const html = editorRef.current?.innerHTML || '';
     if (inputRef.current) inputRef.current.value = html;
     if (countRef?.current) countRef.current.textContent = String(html.length);
+    try { window.localStorage.setItem(storageKey, html); } catch {}
     onChange(html);
   }
+
+  useEffect(() => {
+    let saved = '';
+    try { saved = window.localStorage.getItem(storageKey) || ''; } catch {}
+    if (!saved || saved === initialValue || !editorRef.current) return;
+    editorRef.current.innerHTML = saved;
+    if (inputRef.current) inputRef.current.value = saved;
+    if (countRef?.current) countRef.current.textContent = String(saved.length);
+    onChange(saved);
+    onRecovered();
+  }, [countRef, initialValue, onChange, onRecovered, storageKey]);
 
   function rememberSelection() {
     const selection = window.getSelection();
@@ -90,7 +122,13 @@ export default function ArticleComposer({ article = null }) {
   const contentRef = useRef(initialContent);
   const contentCountRef = useRef(null);
   const [previewContent, setPreviewContent] = useState(initialContent);
+  const [imageError, setImageError] = useState('');
+  const [optimizingImage, setOptimizingImage] = useState(false);
+  const [recoveredDraft, setRecoveredDraft] = useState(false);
   const closeButtonRef = useRef(null);
+  const storageKey = `mlp-article-autosave-${article?.id || 'new'}`;
+  const handleContentChange = useCallback((html) => { contentRef.current = html; }, []);
+  const handleRecovered = useCallback(() => setRecoveredDraft(true), []);
 
   useEffect(() => {
     if (!previewOpen) return undefined;
@@ -100,7 +138,33 @@ export default function ArticleComposer({ article = null }) {
     return () => window.removeEventListener('keydown', closeOnEscape);
   }, [previewOpen]);
 
-  return <form action={action} className="w-full min-w-0 overflow-hidden rounded-2xl border bg-white p-3 shadow-sm sm:rounded-3xl sm:p-6" encType="multipart/form-data">
+  useEffect(() => {
+    if (!state?.success) return;
+    try { window.localStorage.removeItem(storageKey); } catch {}
+  }, [state?.success, storageKey]);
+
+  async function prepareCoverImage(event) {
+    const input = event.currentTarget;
+    const file = input.files?.[0];
+    setImageError('');
+    if (!file) return;
+    setOptimizingImage(true);
+    try {
+      const optimized = await optimizeCoverImage(file);
+      if (optimized !== file) {
+        const transfer = new DataTransfer();
+        transfer.items.add(optimized);
+        input.files = transfer.files;
+      }
+    } catch (error) {
+      input.value = '';
+      setImageError(error.message || 'Choose a smaller cover image.');
+    } finally {
+      setOptimizingImage(false);
+    }
+  }
+
+  return <form action={action} className="w-full min-w-0 overflow-hidden rounded-2xl border bg-white p-3 shadow-sm sm:rounded-3xl sm:p-6">
     {editing ? <input type="hidden" name="id" value={article.id} /> : null}
     <div><p className="text-xs font-bold uppercase tracking-widest text-[#8f7d4d]">{editing ? 'Edit draft' : 'New article'}</p><h2 className="mt-2 text-2xl font-semibold">{editing ? 'Refine your article' : 'Write and publish'}</h2></div>
     <div className="mt-6 grid min-w-0 gap-5 md:grid-cols-2 [&>label]:min-w-0">
@@ -109,14 +173,14 @@ export default function ArticleComposer({ article = null }) {
       <label className="text-sm font-medium">Category<input className={field} name="category" maxLength="100" required placeholder="e.g. Criminal Law" defaultValue={article?.category || ''} /></label>
       <label className="text-sm font-medium md:col-span-2">Writer’s name<input className={field} name="author" maxLength="150" required placeholder="Enter the actual writer for this article" defaultValue={article?.author || ''} /></label>
       <label className="text-sm font-medium md:col-span-2">Summary <span className="float-right text-xs font-normal text-zinc-500">{excerpt.length}/2000</span><textarea className={field} name="excerpt" maxLength="2000" rows="3" required value={excerpt} onChange={(event) => setExcerpt(event.target.value)} /></label>
-      <label className="text-sm font-medium">Cover image upload<input className={`${field} file:mr-2 file:max-w-[52%] file:truncate`} name="image" type="file" accept="image/jpeg,image/png,image/webp" /><span className="mt-1 block text-xs font-normal text-zinc-500">{editing ? 'Leave empty to keep the current upload.' : 'JPEG, PNG or WebP; maximum 10 MB.'}</span></label>
+      <label className="text-sm font-medium">Cover image upload<input className={`${field} file:mr-2 file:max-w-[52%] file:truncate`} name="image" type="file" accept="image/jpeg,image/png,image/webp" onChange={prepareCoverImage} /><span className="mt-1 block text-xs font-normal text-zinc-500">{optimizingImage ? 'Optimising image…' : editing ? 'Leave empty to keep the current upload. Large images are compressed automatically.' : 'JPEG, PNG or WebP. Large images are compressed automatically.'}</span>{imageError ? <span className="mt-1 block text-xs font-semibold text-red-700">{imageError}</span> : null}</label>
       <label className="text-sm font-medium">Or approved cover image URL<input className={field} name="imageUrl" type="url" maxLength="2000" defaultValue={article?.imageUrl || ''} /></label>
-      <div className="md:col-span-2"><div className="flex flex-wrap justify-between gap-2 text-sm font-medium"><span>Article body</span><span className="text-xs font-normal text-zinc-500"><span ref={contentCountRef}>{initialContent.length}</span>/100000 characters</span></div><RichTextEditor initialValue={initialContent} countRef={contentCountRef} onChange={(html) => { contentRef.current = html; }} /></div>
+      <div className="md:col-span-2"><div className="flex flex-wrap justify-between gap-2 text-sm font-medium"><span>Article body</span><span className="text-xs font-normal text-zinc-500"><span ref={contentCountRef}>{initialContent.length}</span>/100000 characters</span></div>{recoveredDraft ? <p className="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-800">Your unsaved article body was recovered from this browser.</p> : null}<RichTextEditor initialValue={initialContent} countRef={contentCountRef} storageKey={storageKey} onRecovered={handleRecovered} onChange={handleContentChange} /></div>
     </div>
     <div className="mt-5 grid gap-3 text-sm sm:flex sm:flex-wrap sm:gap-6"><label className="flex items-center gap-2"><input name="featured" type="checkbox" defaultChecked={Boolean(article?.featured)} /> Feature this article</label><label className="flex items-center gap-2"><input name="publishNow" type="checkbox" /> {editing ? 'Publish after saving' : 'Publish immediately'}</label></div>
     {state?.error && <p role="alert" className="mt-5 rounded-xl bg-red-50 p-3 text-sm text-red-700">{state.error}</p>}
     {state?.success && <p role="status" className="mt-5 rounded-xl bg-emerald-50 p-3 text-sm text-emerald-700">{state.success}</p>}
-    <div className="mt-6 flex flex-col gap-3 sm:flex-row"><button type="button" onClick={() => { setPreviewContent(contentRef.current); setPreviewOpen(true); }} className="rounded-full border px-7 py-3 font-semibold">Preview</button><button disabled={pending} className="rounded-full bg-zinc-950 px-7 py-3 font-semibold text-white disabled:opacity-60">{pending ? 'Saving…' : editing ? 'Save changes' : 'Save article'}</button></div>
+    <div className="mt-6 flex flex-col gap-3 sm:flex-row"><button type="button" onClick={() => { setPreviewContent(contentRef.current); setPreviewOpen(true); }} className="rounded-full border px-7 py-3 font-semibold">Preview</button><button disabled={pending || optimizingImage || Boolean(imageError)} className="rounded-full bg-zinc-950 px-7 py-3 font-semibold text-white disabled:opacity-60">{optimizingImage ? 'Preparing image…' : pending ? 'Saving…' : editing ? 'Save changes' : 'Save article'}</button></div>
     {previewOpen ? <div role="dialog" aria-modal="true" aria-labelledby="article-preview-title" className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3 sm:p-6"><div className="max-h-[90vh] w-full max-w-4xl overflow-auto rounded-2xl bg-white p-5 shadow-2xl sm:rounded-3xl sm:p-8"><div className="flex items-center justify-between gap-4"><h2 id="article-preview-title" className="text-2xl font-semibold">{title || 'Untitled article'}</h2><button ref={closeButtonRef} type="button" onClick={() => setPreviewOpen(false)} className="rounded-full border px-4 py-2 text-sm">Close</button></div><p className="mt-4 text-zinc-600">{excerpt || 'No summary yet.'}</p><div className="article-content mt-8 border-t pt-7" dangerouslySetInnerHTML={{ __html: previewContent || '<p>No article content yet.</p>' }} /></div></div> : null}
   </form>;
 }
